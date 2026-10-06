@@ -1,0 +1,167 @@
+/* ============================================================================
+   Account bar + Change Password dialog
+   Loaded on the signed-in pages, before responsive.css.
+   ============================================================================ */
+
+/* ===================== ACCOUNT BAR =====================
+   Sits at the very bottom of the dashboard, inside the card. */
+.account-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 16px 30px;
+    background: linear-gradient(to right, #55000c, #880012, #55000c);
+    color: rgba(255, 255, 255, 0.92);
+    border-top: 2px solid rgba(197, 155, 69, 0.55);
+}
+
+.account-who {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.account-avatar {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(197, 155, 69, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #C59B45;
+}
+
+.account-text { min-width: 0; }
+
+.account-name {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.account-email {
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.62);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.account-last {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 1px;
+}
+
+.account-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+}
+
+.account-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.10);
+    color: #fff;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.account-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(197, 155, 69, 0.75);
+    transform: translateY(-1px);
+}
+.account-btn.logout {
+    background: rgba(0, 0, 0, 0.28);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+.account-btn.logout:hover {
+    background: rgba(0, 0, 0, 0.42);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ===================== CHANGE PASSWORD DIALOG =====================
+   Reuses the .analysis-gate overlay chassis from home.css so it inherits the
+   blur, the z-index and the mobile scrolling fix in responsive.css. */
+.cp-card {
+    width: 440px;
+    max-width: calc(100vw - 32px);
+    text-align: left;
+}
+.analysis-gate-card.cp-card h3,
+.analysis-gate-card.cp-card > p {
+    text-align: center;
+}
+
+.cp-icon {
+    background: linear-gradient(135deg, #55000c 0%, #880012 100%) !important;
+    box-shadow: 0 8px 20px rgba(85, 0, 12, 0.32) !important;
+}
+
+.cp-field { margin-bottom: 13px; }
+
+.cp-field label {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 6px;
+}
+
+.cp-field input[type="password"],
+.cp-field input[type="text"] {
+    width: 100%;
+    padding: 11px 13px;
+    border: 1px solid #e0e0e0;
+    border-radius: 9px;
+    /* 16px so iOS does not zoom the page when the field takes focus. */
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: normal;
+    background: #fcfcfd;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cp-field input:focus {
+    outline: none;
+    background: #fff;
+    border-color: #880012;
+    box-shadow: 0 0 0 3px rgba(136, 0, 18, 0.12);
+}
+
+.cp-message {
+    min-height: 18px;
+    font-size: 12.5px;
+    font-weight: 500;
+    margin: 4px 0 2px;
+    text-align: center;
+}
+.cp-message.error { color: #b5292a; }
+.cp-message.ok    { color: #0b5c47; }
+
+.analysis-gate-card.cp-card .gate-buttons .btn-primary {
+    background: linear-gradient(to right, #55000c, #880012, #55000c);
+}
+
+@media (hover: none) {
+    .account-btn:hover { transform: none; }
+}

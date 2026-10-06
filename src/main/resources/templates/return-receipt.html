@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return / Exchange Receipt</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =====================================================
+           Mokshitha — Return / Exchange Receipt
+           Palette: ivory paper, emerald, amber accent (distinct from invoice)
+           ===================================================== */
+        :root {
+            --paper:        #fbf7ef;
+            --paper-edge:   #f4eddd;
+            --ink:          #1f2723;
+            --ink-soft:     #5a6059;
+            --ink-muted:    #8a8f88;
+            --emerald:      #0f5a4a;
+            --emerald-dark: #0a3d32;
+            --gold:         #b58a3b;
+            --gold-soft:    #d7b778;
+            --amber:        #b07a1d;
+            --amber-dark:   #7a5310;
+            --amber-light:  #f5e7c8;
+            --accent-red:   #b5292a;
+            --divider:      #d9cfb8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background:
+                radial-gradient(1200px 600px at 20% 10%, #eadfc7 0%, transparent 60%),
+                radial-gradient(1000px 500px at 80% 90%, #e4e9dd 0%, transparent 60%),
+                #efe8d6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            font-family: 'Inter', sans-serif;
+            color: var(--ink);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* ====================== CARD ====================== */
+        .receipt-card {
+            max-width: 980px;
+            width: 100%;
+            background: var(--paper);
+            border-radius: 4px;
+            box-shadow:
+                0 2px 4px rgba(0,0,0,0.04),
+                0 30px 80px rgba(31, 39, 35, 0.18);
+            position: relative;
+            overflow: hidden;
+            animation: rise 0.7s cubic-bezier(0.2, 0.9, 0.25, 1);
+        }
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .receipt-card::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border: 1px solid var(--divider);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .receipt-card::after {
+            content: "";
+            position: absolute;
+            inset: 16px;
+            border: 0.5px solid var(--gold-soft);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .receipt-inner { padding: 40px 50px; position: relative; z-index: 2; }
+
+        /* ====================== HEADER ====================== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 22px;
+            border-bottom: 2px solid var(--emerald);
+            margin-bottom: 4px;
+        }
+        .brand {
+            display: flex;
+            flex-direction: column;
+        }
+        .brand-mark {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--emerald-dark);
+            letter-spacing: 0.5px;
+            line-height: 1;
+        }
+        .brand-mark .amp {
+            color: var(--gold);
+            font-style: italic;
+            margin: 0 4px;
+        }
+        .brand-tag {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 13px;
+            font-style: italic;
+            color: var(--ink-soft);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .doc-meta {
+            text-align: right;
+        }
+        .doc-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--amber-dark);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+        .doc-sub {
+            font-size: 11px;
+            color: var(--ink-muted);
+            margin-top: 4px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .return-id-pill {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 6px 14px;
+            background: var(--amber-light);
+            color: var(--amber-dark);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-radius: 2px;
+            border: 1px solid var(--gold-soft);
+        }
+
+        /* ====================== META ROW ====================== */
+        .meta-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            padding: 22px 0;
+            border-bottom: 1px solid var(--divider);
+        }
+        .meta-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .meta-cell .mk {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .meta-cell .mv {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.2;
+        }
+        .meta-cell .mv.linked {
+            color: var(--emerald);
+            text-decoration: underline;
+            text-decoration-color: var(--gold-soft);
+            text-underline-offset: 3px;
+        }
+
+        /* ====================== BUYER ====================== */
+        .buyer-block {
+            padding: 18px 0 6px;
+            border-bottom: 1px dashed var(--divider);
+        }
+        .buyer-block .buyer-label {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 13px;
+            color: var(--ink-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .buyer-block .buyer-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--emerald-dark);
+            margin-top: 2px;
+        }
+        .buyer-block .buyer-contact {
+            font-size: 13px;
+            color: var(--ink-soft);
+            margin-top: 4px;
+        }
+
+        /* ====================== TABLE SECTIONS ====================== */
+        .section-heading {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--emerald-dark);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin: 24px 0 10px;
+            position: relative;
+            padding-left: 14px;
+        }
+        .section-heading::before {
+            content: "";
+            position: absolute;
+            left: 0; top: 50%;
+            transform: translateY(-50%);
+            width: 4px; height: 70%;
+            background: var(--gold);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        thead th {
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 10px 12px;
+            border-bottom: 1.5px solid var(--emerald);
+        }
+        thead th.right { text-align: right; }
+        tbody td {
+            padding: 11px 12px;
+            border-bottom: 1px solid var(--divider);
+            color: var(--ink);
+            vertical-align: top;
+        }
+        tbody td.right { text-align: right; font-variant-numeric: tabular-nums; }
+        tbody td.desc strong {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--emerald-dark);
+            display: block;
+        }
+        tbody td.desc .reason-tag {
+            display: inline-block;
+            margin-top: 4px;
+            padding: 1px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 999px;
+        }
+        .reason-tag.damaged { background: rgba(181, 41, 42, 0.12); color: var(--accent-red); }
+        .reason-tag.quality { background: rgba(176, 122, 29, 0.15); color: var(--amber-dark); }
+        .reason-tag.size    { background: rgba(15, 90, 74, 0.12); color: var(--emerald); }
+        .reason-tag.color   { background: rgba(181, 138, 59, 0.18); color: var(--gold); }
+        .reason-tag.other   { background: rgba(90, 96, 89, 0.12); color: var(--ink-soft); }
+
+        tbody td.desc .notes-line {
+            font-size: 11px;
+            font-style: italic;
+            color: var(--ink-muted);
+            margin-top: 4px;
+        }
+
+        /* ====================== SUMMARY ====================== */
+        .summary-zone {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+        .summary-box {
+            width: 55%;
+            background: var(--paper-edge);
+            border: 1.5px solid var(--gold-soft);
+            border-radius: 3px;
+            padding: 18px 22px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+            color: var(--ink-soft);
+        }
+        .summary-row .sk { font-weight: 500; }
+        .summary-row .sv { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); }
+
+        .summary-final {
+            margin-top: 10px;
+            padding: 14px 0 4px;
+            border-top: 2px solid var(--emerald);
+        }
+        .summary-final .sk {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--emerald-dark);
+        }
+        .summary-final .sv {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--emerald-dark);
+        }
+        /* Color the final by direction */
+        .summary-final.refund .sv  { color: #0a7a52; }
+        .summary-final.charge .sv  { color: var(--accent-red); }
+        .summary-final.even   .sv  { color: var(--ink-soft); }
+
+        .refund-mode-line {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--ink-soft);
+            font-style: italic;
+            text-align: right;
+        }
+        .refund-mode-line strong {
+            font-style: normal;
+            color: var(--emerald);
+            font-weight: 600;
+        }
+
+        /* ====================== NOTES ====================== */
+        .notes-block {
+            margin-top: 20px;
+            padding: 12px 16px;
+            background: var(--paper-edge);
+            border-left: 3px solid var(--gold);
+            font-style: italic;
+            color: var(--ink-soft);
+            font-size: 13px;
+        }
+
+        /* ====================== ADMIN OVERRIDE WARNING ====================== */
+        .override-banner {
+            margin-top: 18px;
+            background: var(--amber-light);
+            border: 1px solid var(--gold-soft);
+            border-left: 4px solid var(--amber-dark);
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--amber-dark);
+            font-weight: 500;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* ====================== FOOTER ====================== */
+        .footer {
+            margin-top: 30px;
+            padding-top: 18px;
+            border-top: 1px solid var(--divider);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 24px;
+        }
+        .signature {
+            display: flex;
+            flex-direction: column;
+            min-width: 240px;
+        }
+        .sig-line {
+            border-bottom: 1px solid var(--ink-muted);
+            height: 30px;
+        }
+        .sig-label {
+            font-size: 10px;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+        }
+        .footer-tag {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--ink-muted);
+            font-size: 13px;
+            text-align: right;
+            line-height: 1.4;
+        }
+
+        /* ====================== FLOATING ACTIONS ====================== */
+        .float-actions {
+            position: fixed;
+            right: 24px;
+            top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+        .float-actions button {
+            background: var(--emerald);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(15, 90, 74, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: transform 0.15s ease;
+        }
+        .float-actions button:hover { transform: translateY(-1px); }
+        .float-actions button.back {
+            background: var(--paper);
+            color: var(--ink-soft);
+            border: 1px solid var(--divider);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+        }
+
+        /* Loading/error states */
+        .state-card {
+            background: var(--paper);
+            border-radius: 4px;
+            padding: 60px 50px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+            text-align: center;
+            color: var(--ink-soft);
+            max-width: 480px;
+        }
+        .state-card i { font-size: 38px; color: var(--gold); margin-bottom: 16px; }
+        .state-card h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            color: var(--emerald-dark);
+            margin-bottom: 8px;
+        }
+        .state-card p { font-size: 14px; }
+
+        /* ====================== PRINT ====================== */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .receipt-card {
+                box-shadow: none;
+                max-width: none;
+                width: 100%;
+                page-break-inside: avoid;
+            }
+            .receipt-card::before, .receipt-card::after {
+                inset: 8px;
+            }
+            .float-actions { display: none !important; }
+            .override-banner {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+        }
+    </style>
+
+    <!-- Responsive layer — screen-only, so the @media print rules above stay
+         in full control of the printed receipt. -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/responsive.css}">
+</head>
+<body>
+
+    <div class="float-actions">
+        <button onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+        <button class="back" onclick="window.location.href='/'"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+
+    <!-- Main content rendered by JS -->
+    <div id="root">
+        <div class="state-card">
+            <i class="fas fa-spinner fa-spin"></i>
+            <h2>Loading receipt…</h2>
+            <p>Please wait a moment.</p>
+        </div>
+    </div>
+
+    <!-- Loads first so an expired session redirects to the login page, rather
+         than this page rendering a broken receipt from a 401 response. -->
+    <script th:src="@{/js/auth.js}"></script>
+    <script th:inline="javascript">
+        // Server hands us the return ID via Thymeleaf
+        const RETURN_ID = /*[[${returnId}]]*/ 'RTN_PLACEHOLDER';
+
+        // Pretty helpers
+        const fmtINR = n => '\u20B9' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+        const esc = s => String(s == null ? '' : s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+        const REASON_CLASS = {
+            'Damaged': 'damaged',
+            'Quality': 'quality',
+            'Size':    'size',
+            'Color':   'color',
+            'Other':   'other'
+        };
+
+        // ============ Load + render ============
+        async function load() {
+            try {
+                // Fetch the return itself + the original bill (for buyer info & related context)
+                const retRes = await fetch('/api/return/' + encodeURIComponent(RETURN_ID));
+                if (!retRes.ok) {
+                    const body = await retRes.json().catch(() => ({}));
+                    throw new Error(body.error || 'Return not found');
+                }
+                const ret = await retRes.json();
+
+                // Look up the original bill (gives us buyerName/buyerMobile + originalDate)
+                const billRes = await fetch('/api/return/lookup/' + encodeURIComponent(ret.originalBillNo));
+                const bill = billRes.ok ? await billRes.json() : null;
+
+                // If exchange happened, look up the new invoice too
+                let newInvoice = null;
+                if (ret.newBillNo) {
+                    try {
+                        const allInv = await fetch('/api/invoice/all').then(r => r.json());
+                        newInvoice = (allInv || []).find(i => i.billNo === ret.newBillNo) || null;
+                    } catch (e) { /* non-fatal */ }
+                }
+
+                render(ret, bill, newInvoice);
+            } catch (err) {
+                document.getElementById('root').innerHTML = `
+                    <div class="state-card">
+                        <i class="fas fa-exclamation-circle" style="color:#b5292a;"></i>
+                        <h2>Couldn't load receipt</h2>
+                        <p>${esc(err.message)}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function render(ret, bill, newInvoice) {
+            const refundAmount   = Number(ret.refundAmount || 0);
+            const totalReturned  = (ret.items || []).reduce(
+                (s, it) => s + Number(it.unitPrice || 0) * Number(it.quantityReturned || 0), 0);
+            const exchangeTotal  = newInvoice ? Number(newInvoice.totalAmount || 0) : 0;
+
+            // Refund kind for color coding
+            let finalKind, finalLabel, finalAmt;
+            if (refundAmount > 0)      { finalKind = 'refund'; finalLabel = 'Refund to customer'; finalAmt = refundAmount; }
+            else if (refundAmount < 0) { finalKind = 'charge'; finalLabel = 'Customer paid extra'; finalAmt = Math.abs(refundAmount); }
+            else                       { finalKind = 'even';   finalLabel = 'Even swap';          finalAmt = 0; }
+
+            const fmtDate = (d) => {
+                if (!d) return '—';
+                const dt = new Date(d + 'T00:00:00');
+                if (isNaN(dt.getTime())) return d;
+                return dt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+            };
+            const fmtTime = (t) => t ? String(t).slice(0, 5) : '—';
+
+            // Returned items table rows
+            const returnedRows = (ret.items || []).map(it => {
+                const reasonCls = REASON_CLASS[it.reason] || 'other';
+                const damagedTag = it.reason === 'Damaged' && it.stockReturned === false
+                    ? '<span class="reason-tag damaged" style="margin-left:6px;">Not Restocked</span>'
+                    : '';
+                const notes = it.reasonNotes
+                    ? `<div class="notes-line">"${esc(it.reasonNotes)}"</div>` : '';
+                return `
+                    <tr>
+                        <td class="desc">
+                            <strong>${esc(it.description)}</strong>
+                            <span class="reason-tag ${reasonCls}">${esc(it.reason)}</span>
+                            ${damagedTag}
+                            ${notes}
+                        </td>
+                        <td class="right">${fmtINR(it.unitPrice)}</td>
+                        <td class="right">${it.quantityReturned}</td>
+                        <td class="right">${fmtINR(Number(it.unitPrice) * Number(it.quantityReturned))}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Exchange items table (only if exchange happened)
+            const exchangeBlock = newInvoice && newInvoice.items && newInvoice.items.length > 0 ? `
+                <div class="section-heading">Exchange Items <small style="font-size:11px;color:var(--ink-muted);letter-spacing:0.5px;text-transform:none;font-style:italic;font-family:'Inter',sans-serif;font-weight:400;">— new bill #${esc(newInvoice.billNo)}</small></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th class="right">Price</th>
+                            <th class="right">Qty</th>
+                            <th class="right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${newInvoice.items.map(it => `
+                            <tr>
+                                <td class="desc">
+                                    <strong>${esc(it.description)}</strong>
+                                    ${it.color ? `<div class="notes-line">Color: ${esc(it.color)}</div>` : ''}
+                                </td>
+                                <td class="right">${fmtINR(it.price)}</td>
+                                <td class="right">${it.quantity}</td>
+                                <td class="right">${fmtINR(Number(it.price) * Number(it.quantity))}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            ` : '';
+
+            // Override banner
+            const overrideBanner = ret.adminOverride ? `
+                <div class="override-banner">
+                    <i class="fas fa-exclamation-triangle"></i> &nbsp;
+                    This return was processed past the standard 7-day window with admin override.
+                </div>
+            ` : '';
+
+            // Optional notes
+            const notesBlock = ret.notes ? `
+                <div class="notes-block">
+                    <strong style="font-style:normal;color:var(--ink);">Note:</strong> "${esc(ret.notes)}"
+                </div>
+            ` : '';
+
+            document.getElementById('root').innerHTML = `
+                <div class="receipt-card">
+                    <div class="receipt-inner">
+
+                        <!-- HEADER -->
+                        <div class="header">
+                            <div class="brand">
+                                <div class="brand-mark">Mokshitha <span class="amp">&</span> Moksha</div>
+                                <div class="brand-tag">Collections · Studio</div>
+                            </div>
+                            <div class="doc-meta">
+                                <div class="doc-title">Return Receipt</div>
+                                <div class="doc-sub">Return / Exchange Record</div>
+                                <div class="return-id-pill">#${esc(ret.returnId)}</div>
+                            </div>
+                        </div>
+
+                        <!-- META -->
+                        <div class="meta-row">
+                            <div class="meta-cell">
+                                <span class="mk">Original Bill</span>
+                                <span class="mv linked">#${esc(ret.originalBillNo)}</span>
+                            </div>
+                            <div class="meta-cell">
+                                <span class="mk">Bill Date</span>
+                                <span class="mv">${fmtDate(bill ? bill.invoiceDate : null)}</span>
+                            </div>
+                            <div class="meta-cell">
+                                <span class="mk">Returned On</span>
+                                <span class="mv">${fmtDate(ret.returnDate)} · ${fmtTime(ret.returnTime)}</span>
+                            </div>
+                            <div class="meta-cell">
+                                <span class="mk">Processed By</span>
+                                <span class="mv">${esc(ret.processedBy)}</span>
+                            </div>
+                        </div>
+
+                        <!-- BUYER -->
+                        <div class="buyer-block">
+                            <div class="buyer-label">Customer</div>
+                            <div class="buyer-name">${esc(bill && bill.buyerName ? bill.buyerName : '—')}</div>
+                            <div class="buyer-contact">
+                                ${bill && bill.buyerMobile ? '<i class="fas fa-phone"></i> ' + esc(bill.buyerMobile) : ''}
+                                ${bill && bill.paymentMode ? '&nbsp;·&nbsp; Original payment: <strong style="color:var(--emerald);">' + esc(bill.paymentMode) + '</strong>' : ''}
+                            </div>
+                        </div>
+
+                        ${overrideBanner}
+
+                        <!-- RETURNED ITEMS -->
+                        <div class="section-heading">Returned Items</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Item &amp; Reason</th>
+                                    <th class="right">Unit Price</th>
+                                    <th class="right">Qty</th>
+                                    <th class="right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>${returnedRows}</tbody>
+                        </table>
+
+                        ${exchangeBlock}
+
+                        <!-- SUMMARY -->
+                        <div class="summary-zone">
+                            <div class="summary-box">
+                                <div class="summary-row">
+                                    <span class="sk">Returned items value</span>
+                                    <span class="sv">${fmtINR(totalReturned)}</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span class="sk">Exchange items value</span>
+                                    <span class="sv">${fmtINR(exchangeTotal)}</span>
+                                </div>
+                                <div class="summary-row summary-final ${finalKind}">
+                                    <span class="sk">${finalLabel}</span>
+                                    <span class="sv">${fmtINR(finalAmt)}</span>
+                                </div>
+                                ${refundAmount !== 0 ? `
+                                    <div class="refund-mode-line">
+                                        via <strong>${esc(ret.refundMode)}</strong>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        ${notesBlock}
+
+                        <!-- FOOTER -->
+                        <div class="footer">
+                            <div class="signature">
+                                <div class="sig-line"></div>
+                                <div class="sig-label">Authorised Signature</div>
+                            </div>
+                            <div class="footer-tag">
+                                Thank you for shopping with us.<br>
+                                We hope to see you again soon.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+
+            // Auto-print after a moment (only if not landing here manually for review)
+            // Cashier opened via /return-receipt/{id} expected workflow — auto-print.
+            setTimeout(() => { window.print(); }, 800);
+        }
+
+        load();
+    </script>
+</body>
+</html>

@@ -1,0 +1,640 @@
+/* ============================================================================
+   Mokshitha IMS - Responsive layer
+   ----------------------------------------------------------------------------
+   Loaded LAST on every page, so these rules win over home.css and over each
+   page's inline <style> block without any of them needing to be edited.
+
+   Everything here is wrapped in `@media screen and (...)` so printed output
+   (invoice.html, return-receipt.html, the barcode sticker sheet) is unchanged -
+   the existing `@media print` blocks stay in full control.
+
+   Breakpoints
+     1280px  small laptop / large tablet landscape
+     1024px  tablet landscape
+      860px  tablet portrait   <- main "compact" switch
+      640px  phone
+      420px  small phone
+   ============================================================================ */
+
+
+/* ============================================================
+   0. FOUNDATIONS (all screen sizes)
+   ============================================================ */
+@media screen {
+
+    /* Stop iOS/Android inflating font sizes on rotate. */
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+
+    /* Nothing should be able to push the page wider than the viewport. */
+    img, svg, video, canvas {
+        max-width: 100%;
+    }
+
+    /* Long product names / emails / notes wrap instead of stretching cells.
+       `overflow-wrap` only breaks a word that genuinely cannot fit; do NOT add
+       `word-break: break-word` here - that breaks words eagerly and turned
+       table headers into "Catego/ry" and "Colo/r" once the columns got tight. */
+    td, th, .supplier-name, .match-item, .sv, .meta-value {
+        overflow-wrap: break-word;
+    }
+
+    /* Column headers stay on one line. These tables scroll horizontally, so
+       there is no benefit to wrapping a heading - it just costs row height
+       and makes the header hard to scan. */
+    #pastBusinessTable th,
+    #inventoryTable th,
+    #suppliersTable th,
+    #purchasesTable th,
+    #creditNotesTable th,
+    #ledgerTable th,
+    #priceCheckTable th {
+        white-space: nowrap;
+    }
+
+    /* Momentum scrolling + contained overscroll for every horizontal scroller. */
+    .table-container,
+    .purchase-tabs,
+    .tc-scroll,
+    .items-section {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+    }
+
+    /* ---- Let grid/flex items actually shrink -------------------------------
+       A grid or flex item defaults to `min-width: auto`, which refuses to go
+       narrower than its content's min-content width. Because the wide tables
+       below carry a `min-width`, that minimum propagated all the way up and
+       forced whole panels to ~860px on a 375px phone — the page then looked
+       fine only because `.dashboard { overflow: hidden }` was silently
+       clipping it. `min-width: 0` lets the panel take the viewport width and
+       hands the horizontal scrolling back to `.table-container`, which is
+       where it belongs.                                                      */
+    .main-content > *,
+    .main-below > *,
+    .charts-grid > *,
+    .tables-grid > *,
+    .kpi-row > *,
+    .product-form > *,
+    .info-grid > *,
+    .supplier-form-grid > *,
+    .refund-controls > *,
+    .summary-grid > *,
+    .return-form > *,
+    .selling-item > *,
+    .exchange-add-row > *,
+    .invoice-card,
+    .receipt-card {
+        min-width: 0;
+    }
+
+    /* ---- Modal overlays: let tall dialogs scroll ----------------------------
+       `.analysis-gate` is a fixed, centred flex box. A dialog taller than the
+       viewport (New Purchase, New Credit Note, Add Supplier on a phone) was
+       clipped at BOTH ends with no way to reach the Save button. The card now
+       scrolls inside itself.                                                  */
+    .analysis-gate {
+        padding: 16px;
+        overflow-y: auto;
+    }
+    .analysis-gate-card {
+        max-height: calc(100vh - 32px);
+        max-height: calc(100dvh - 32px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Scroll affordance: edge shadows that show only while a table actually has
+       more content off-screen (background-attachment: local trick). */
+    .table-container,
+    .tc-scroll {
+        background-image:
+            linear-gradient(to right,  #ffffff 32%, rgba(255,255,255,0)),
+            linear-gradient(to left,   #ffffff 32%, rgba(255,255,255,0)),
+            radial-gradient(farthest-side at 0    50%, rgba(0,0,0,0.13), rgba(0,0,0,0)),
+            radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,0.13), rgba(0,0,0,0));
+        background-position: left center, right center, left center, right center;
+        background-repeat: no-repeat;
+        background-size: 34px 100%, 34px 100%, 15px 100%, 15px 100%;
+        background-attachment: local, local, scroll, scroll;
+    }
+}
+
+
+/* ============================================================
+   1. <= 1280px - small laptop / tablet landscape
+   ============================================================ */
+@media screen and (max-width: 1280px) {
+
+    body { padding: 16px; }
+
+    /* ---- Home page goes full-bleed on tablet and phone ---------------------
+       The dashboard card is the only thing between the header (the maroon
+       logo bar) and the screen edge, so dropping the body padding lets that
+       bar run edge to edge. Square off the corners and drop the drop-shadow
+       too - both only read as "a card floating on a page", which is not what
+       a full-bleed bar is.
+
+       `:has(> .dashboard)` keeps this to home.html; purchases.html and
+       analysis.html lay their content out as free-standing cards and still
+       want their gutter. It also carries down to the narrower breakpoints on
+       its own: `body:has(> .dashboard)` (0,1,1) out-specifies the plain
+       `body` padding rules below, so they do not need restating. */
+    body:has(> .dashboard) { padding: 0; }
+    .dashboard {
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .main-content,
+    .main-below      { padding: 22px; gap: 20px; }
+
+    .left-panel,
+    .right-panel,
+    .below-panel     { padding: 20px; }
+
+    /* 3-up product form becomes 2-up; the barcode / Add-Product row follows. */
+    .product-form                { grid-template-columns: repeat(2, 1fr); }
+    .barcode-preview-cell        { grid-column: 1 / -1; }
+    .add-product-cell            { grid-column: 1 / -1; }
+
+    /* Current Business stays a 2-column grid for the whole tablet range
+       (1280px down to the phone breakpoint). An iPad in landscape is
+       1180-1194px, so it lands here - 3 narrow columns squeezed the
+       label/field pairs; 2 keeps them comfortable. */
+    .info-grid       { grid-template-columns: repeat(2, 1fr); }
+
+    /* Past Business and Current Inventory are the two widest tables on the
+       page. Above 860px nothing set a font-size, so they fell back to the
+       browser default 16px, which is oversized for dense data. Step them
+       down through the tablet range. The ID selectors are needed because
+       they also have to beat the generic `th, td` rules further down -
+       which is why each breakpoint restates them. */
+    #pastBusinessTable th, #pastBusinessTable td,
+    #inventoryTable th,    #inventoryTable td {
+        font-size: 12px;
+        padding: 7px 7px;
+    }
+
+    .purchases-section { padding: 20px; }
+
+    /* analysis.html */
+    .kpi-row         { grid-template-columns: repeat(4, 1fr); }
+}
+
+
+/* ============================================================
+   2. <= 1024px - tablet landscape
+   ============================================================ */
+@media screen and (max-width: 1024px) {
+
+    .dashboard .header     { padding: 14px 20px; }
+    .dashboard .header img { height: 58px !important; width: auto; }
+
+    .section-header  { margin-bottom: 18px; padding-bottom: 12px; }
+
+    /* No input below 16px - anything smaller makes iOS Safari (and iPadOS)
+       zoom the whole page on focus, which is the single worst thing about
+       using a desktop form on a touch device. Applied from the iPad-landscape
+       width down. Every selector is listed because the matching rule in
+       home.css / the page <style> out-specifies a bare `input` selector. */
+    input, select, textarea,
+    .form-group input, .form-group select, .form-group textarea,
+    .sf-field input, .sf-field select,
+    .table-search input,
+    .suppliers-search input, .suppliers-search select,
+    .refund-controls input, .refund-controls select,
+    .exchange-add-row input,
+    .return-lookup input,
+    .info-item input, .info-item select,
+    .info-item-value1 select, .info-item-value2 input,
+    .filter-group input[type="date"],
+    #scanToBill,
+    #returnItemsTable select,
+    #returnItemsTable input[type="text"],
+    #returnItemsTable input[type="number"],
+    .analysis-gate-card input[type="password"] {
+        font-size: 16px;
+    }
+    /* ...but keep the in-table number stepper from overflowing its column. */
+    #returnItemsTable input[type="number"] { width: 74px; }
+
+    .info-grid       { grid-template-columns: repeat(2, 1fr); }
+
+    .charts-grid     { grid-template-columns: 1fr; }
+    .kpi-row         { grid-template-columns: repeat(3, 1fr); }
+    .tables-grid     { grid-template-columns: 1fr; }
+    .chart-canvas-wrap      { height: 260px; }
+    .chart-canvas-wrap.tall { height: 300px; }
+
+    /* invoice.html / return-receipt.html on screen */
+    .invoice-header  { padding: 28px 30px 22px; }
+    .invoice-body    { padding: 24px 30px 30px; }
+    .receipt-inner   { padding: 30px 30px; }
+    .info-section    { gap: 24px; }
+}
+
+
+/* ============================================================
+   3. <= 860px - TABLET PORTRAIT (the main compact switch)
+   ============================================================ */
+@media screen and (max-width: 860px) {
+
+    /* ---- Page shell ---- */
+    body {
+        padding: 10px;
+        overflow-x: hidden;   /* fallback for Safari < 16 */
+        overflow-x: clip;     /* preferred: no scroll container, sticky-safe */
+    }
+    /* (no .dashboard border-radius here - it is squared off full-bleed above) */
+    .main-content,
+    .main-below      { padding: 14px; gap: 14px; }
+    .left-panel,
+    .right-panel,
+    .below-panel     { padding: 14px; border-radius: 16px; }
+
+    /* ---- Header: logos stay side by side, clock drops to its own line ----
+       Scoped to .dashboard because return-receipt.html has its own .header. */
+    .dashboard .header {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 12px 14px;
+        gap: 10px;
+    }
+    .dashboard .header img { height: 50px !important; width: auto; }
+    .date-time {
+        order: 3;
+        width: 100%;
+        text-align: center;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .section-header h2       { font-size: 1.1em; }
+    .section-header h2 span  { display: block; margin-left: 0; margin-top: 2px; }
+
+    /* ---- Product tabs: 2x2 grid so all four stay visible and tappable ---- */
+    .product-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .tab-btn {
+        padding: 11px 8px;
+        font-size: 13px;
+        min-height: 44px;
+    }
+
+    /* ---- Forms ---- */
+    .product-form    { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .form-group      { margin-bottom: 10px; }
+
+    /* ---- Current Business info grid ---- */
+    .info-grid       { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .business-info   { padding: 14px; }
+    .info-item {
+        display: grid;
+        grid-template-columns: minmax(64px, auto) 1fr;
+        align-items: center;
+        gap: 4px 10px;
+        padding: 8px 10px;
+    }
+    .info-item .label,
+    .info-item .value        { padding: 4px 0; font-size: 0.9em; }
+    .info-item input,
+    .info-item select        { width: 100%; }
+
+    /* ---- Scan-to-bill row ---- */
+    .bill-section    { padding: 14px; }
+    .selling-item    { flex-wrap: wrap; gap: 12px; margin: 12px 0; }
+    .info-item-value1,
+    .info-item-value2 {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 8px;
+    }
+    .info-item-value1        { flex: 1 1 100%; }
+    .info-item-value2        { flex: 1 1 100%; }
+    .info-item-value1 select { width: 100%; }
+    .info-item-value2 input  { width: 100%; }
+    #scanToBill              { width: 100%; }
+
+    /* ---- Tables: scroll sideways rather than crushing columns ---- */
+    th, td { padding: 9px 8px; font-size: 13px; }
+    #pastBusinessTable th, #pastBusinessTable td,
+    #inventoryTable th,    #inventoryTable td { font-size: 11.5px; padding: 6px 6px; }
+
+    #billTable          { min-width: 720px; }
+    #pastBusinessTable  { min-width: 760px; }
+    #inventoryTable     { min-width: 840px; }
+    #returnItemsTable   { min-width: 900px; }
+    #exchangeItemsTable { min-width: 520px; }
+    #suppliersTable     { min-width: 840px; }
+    #purchasesTable     { min-width: 800px; }
+    #creditNotesTable   { min-width: 700px; }
+    #ledgerTable        { min-width: 740px; }
+    #priceCheckTable    { min-width: 640px; }
+    #purchaseLinesTable { min-width: 560px; }
+    #creditLinesTable   { min-width: 560px; }
+
+    /* ---- Filters / search / pagination ---- */
+    .date-filters    { gap: 8px; }
+    .filter-btn      { flex: 1 1 auto; min-height: 40px; font-size: 13px; }
+    .range-finder    { flex-wrap: wrap; }
+    .range-finder input          { flex: 1 1 calc(50% - 5px); min-width: 0; }
+    .range-finder .btn-secondary { flex: 1 1 100%; justify-content: center; }
+
+    .export-section  { flex-wrap: wrap; justify-content: stretch; gap: 8px; }
+    .export-btn      { flex: 1 1 calc(50% - 4px); justify-content: center; min-height: 44px; }
+
+    /* ---- Return / exchange ---- */
+    .return-step     { padding: 14px; }
+    .return-lookup   { flex-wrap: wrap; }
+    .return-lookup input          { flex: 1 1 100%; }
+    .return-lookup .btn-primary   { flex: 1 1 100%; justify-content: center; }
+    .return-step-header           { flex-wrap: wrap; gap: 8px; }
+
+    .exchange-add-row                   { flex-wrap: wrap; align-items: stretch; }
+    .exchange-add-row .info-item-value1 { flex: 1 1 100%; }
+    .exchange-add-row .info-item-value2 { width: 100%; flex: 1 1 100%; }
+    .exchange-add-row button            { width: 100%; justify-content: center; min-height: 44px; }
+
+    .refund-summary-card { padding: 14px; }
+    .refund-actions      { flex-wrap: wrap; }
+
+    /* ---- Barcode preview / sticker ---- */
+    .barcode-preview {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .barcode-preview .print-beside-sticker { width: 100%; justify-content: center; }
+    .barcode-preview-cell .barcode-preview { width: 100%; }
+    .add-product-cell              { justify-content: stretch; }
+    .add-product-cell .btn-primary { width: 100%; justify-content: center; min-height: 46px; }
+
+    /* ---- Account bar ---- */
+    .account-bar     { padding: 14px 16px; gap: 12px; }
+    .account-actions { flex: 1 1 100%; }
+    .account-btn     { flex: 1 1 0; min-height: 44px; }
+
+    /* ---- Modals ---- */
+    .analysis-gate-card  { padding: 22px 18px; }
+    .supplier-form-grid  { grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+    .gate-buttons button { min-height: 46px; }
+
+    /* ---- purchases.html ---- */
+    .page-header       { flex-wrap: wrap; padding: 14px 16px; gap: 12px; }
+    .purchases-section { padding: 14px; border-radius: 14px; }
+    .purchase-tabs     { scroll-snap-type: x proximity; }
+    .purchase-tab-btn  { scroll-snap-align: start; min-height: 44px; }
+
+    .suppliers-toolbar { gap: 10px; }
+    .suppliers-search  { min-width: 0 !important; max-width: none; flex: 1 1 100% !important; }
+    .suppliers-search input,
+    .suppliers-search select        { width: 100% !important; min-width: 0 !important; }
+    .suppliers-toolbar .btn-primary { flex: 1 1 auto; justify-content: center; min-height: 44px; }
+
+    .supplier-actions .action-icon { width: 36px; height: 36px; font-size: 14px; }
+
+    /* ---- analysis.html ---- */
+    .kpi-row         { grid-template-columns: repeat(2, 1fr); }
+    .kpi             { padding: 16px; }
+    .kpi .kpi-value  { font-size: 25px; }
+    .filter-bar      { padding: 14px; gap: 12px; }
+    .filter-group    { flex-wrap: wrap; }
+    .chart-card,
+    .table-card      { padding: 16px; }
+    .chart-canvas-wrap      { height: 240px; }
+    .chart-canvas-wrap.tall { height: 280px; }
+
+    /* Analytics tables scroll inside their card (wrapper added in the template). */
+    .tc-scroll       { overflow-x: auto; }
+    .tc-scroll table { min-width: 520px; }
+
+    /* ---- invoice.html ---- */
+    .invoice-header  { padding: 22px 18px 16px; }
+    .invoice-body    { padding: 18px 16px 24px; }
+    .info-section    { grid-template-columns: 1fr; gap: 18px; }
+    .info-divider    { display: none; }
+    .invoice-meta    { grid-template-columns: 1fr; }
+    .items-section   { overflow-x: auto; }
+    .items-table     { min-width: 680px; }
+    .footer-section  { grid-template-columns: 1fr; gap: 20px; justify-items: center; text-align: center; }
+
+    /* ---- return-receipt.html ----
+       Its own `thead th` / `tbody td` rules out-specify the generic th,td above,
+       so the receipt tables need matching selectors to tighten up. */
+    .receipt-inner   { padding: 22px 16px; }
+    .receipt-card thead th { padding: 9px 7px; }
+    .receipt-card tbody td { padding: 9px 7px; font-size: 12.5px; }
+    .receipt-card tbody td.desc strong { font-size: 14px; }
+    .meta-row        { grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 16px 0; }
+    .summary-zone    { justify-content: stretch; }
+    .summary-box     { width: 100%; }
+    .footer          { flex-wrap: wrap; gap: 16px; }
+    .signature       { min-width: 0; width: 100%; }
+}
+
+
+/* ============================================================
+   4. <= 640px - PHONE
+   ============================================================ */
+@media screen and (max-width: 640px) {
+
+    body             { padding: 6px; }
+    .main-content,
+    .main-below      { padding: 10px; gap: 10px; }
+    .left-panel,
+    .right-panel,
+    .below-panel     { padding: 12px; border-radius: 14px; }
+
+    .dashboard .header     { padding: 10px; }
+    .dashboard .header img { height: 42px !important; width: auto; }
+
+    /* Single column everywhere. */
+    .product-form       { grid-template-columns: 1fr; }
+    .info-grid          { grid-template-columns: 1fr; }
+    .supplier-form-grid { grid-template-columns: 1fr; }
+    .refund-controls    { grid-template-columns: 1fr; }
+    .summary-grid       { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px 14px; }
+
+    th, td           { padding: 8px 6px; font-size: 12.5px; }
+    #pastBusinessTable th, #pastBusinessTable td,
+    #inventoryTable th,    #inventoryTable td { font-size: 11px; padding: 6px 5px; }
+
+    .export-btn         { flex: 1 1 100%; }
+    .filter-btn         { flex: 1 1 calc(50% - 4px); }
+    .range-finder input { flex: 1 1 100%; }
+
+    .refund-actions .btn-secondary,
+    .refund-actions .btn-primary { flex: 1 1 100%; justify-content: center; min-height: 46px; }
+
+    .search-box              { flex-wrap: wrap; }
+    .search-box input        { flex: 1 1 100%; }
+    .search-box .btn-danger,
+    .search-box .btn-primary { flex: 1 1 100%; min-height: 44px; }
+
+    /* Account bar: identity on one line, the two buttons side by side below. */
+    .account-bar     { padding: 12px; gap: 10px; }
+    .account-avatar  { width: 34px; height: 34px; font-size: 14px; }
+    .account-name    { font-size: 13px; }
+    .account-email   { font-size: 11px; }
+    .account-last    { display: none; }
+    .account-btn     { font-size: 12.5px; padding: 10px 10px; }
+
+    .pagination-controls { justify-content: center; text-align: center; }
+    .pagination-buttons  { width: 100%; }
+    .page-btn            { flex: 1 1 0; justify-content: center; min-height: 42px; }
+
+    /* Modals near edge-to-edge */
+    .analysis-gate   { padding: 8px; }
+    .analysis-gate-card {
+        padding: 18px 14px;
+        border-radius: 14px;
+        max-height: calc(100vh - 16px);
+        max-height: calc(100dvh - 16px);
+    }
+    .analysis-gate-card .gate-icon { width: 46px; height: 46px; font-size: 20px; margin-bottom: 12px; }
+    .analysis-gate-card h3         { font-size: 17px; }
+    .analysis-gate-card p          { font-size: 13px; margin-bottom: 14px; }
+    .gate-buttons        { flex-wrap: wrap; }
+    .gate-buttons button { flex: 1 1 100%; }
+
+    /* purchases.html */
+    .page-header     { flex-direction: column; align-items: stretch; text-align: left; }
+    .page-header h1  { font-size: 19px; }
+    .back-btn        { justify-content: center; min-height: 44px; }
+    .purchases-header h2 { font-size: 18px; }
+    .show-inactive   { flex: 1 1 100%; }
+
+    /* analysis.html */
+    .kpi-row                 { grid-template-columns: 1fr; }
+    .chart-canvas-wrap       { height: 215px; }
+    .chart-canvas-wrap.tall  { height: 250px; }
+    .page-header .title-icon { width: 42px; height: 42px; font-size: 18px; }
+
+    /* invoice.html / return-receipt.html */
+    .invoice-title h2 { font-size: 2.4em; }
+    .invoice-header   { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+    .invoice-title    { text-align: center; }
+    .invoice-header .brand { justify-content: center; }
+    .meta-row         { grid-template-columns: 1fr; gap: 10px; }
+    .float-actions    { flex-wrap: wrap; }
+    .receipt-card thead th { padding: 8px 5px; font-size: 9px; letter-spacing: 1px; }
+    .receipt-card tbody td { padding: 8px 5px; font-size: 12px; }
+
+    /* Loading splash. Prefixed with .app-loader so these still win over the
+       loader <style> block that analysis.html declares later in its <body>. */
+    .app-loader .loom-ring    { width: 104px; height: 104px; margin-bottom: 20px; }
+    .app-loader .loader-brand { font-size: 36px; }
+    .app-loader .loader-sub   { font-size: 11px; letter-spacing: 3px; }
+    .app-loader .weave-bar    { width: 180px; }
+}
+
+
+/* ============================================================
+   5. <= 420px - SMALL PHONE
+   ============================================================ */
+@media screen and (max-width: 420px) {
+
+    body             { padding: 4px; }
+    .main-content,
+    .main-below      { padding: 8px; }
+    .left-panel,
+    .right-panel,
+    .below-panel     { padding: 10px; }
+
+    .dashboard .header img { height: 36px !important; width: auto; }
+
+    .tab-btn         { font-size: 12px; padding: 10px 4px; gap: 5px; }
+
+    th, td           { padding: 7px 5px; font-size: 12px; }
+    #pastBusinessTable th, #pastBusinessTable td,
+    #inventoryTable th,    #inventoryTable td { font-size: 10.5px; padding: 5px 4px; }
+
+    /* Generate-ID row stacks so the button is not squeezed to nothing. */
+    .id-generator                    { flex-wrap: wrap; }
+    .id-generator input[type="text"] { flex: 1 1 100%; }
+    .btn-generate                    { flex: 1 1 100%; min-height: 44px; }
+
+    .barcode-sticker { width: 100%; max-width: 280px; }
+
+    .section-header i   { font-size: 1.2em; }
+    .purchases-header i { width: 38px; height: 38px; font-size: 16px; }
+
+    .filter-btn      { flex: 1 1 100%; }
+    .summary-grid    { grid-template-columns: 1fr; }
+
+    .chart-canvas-wrap      { height: 195px; }
+    .chart-canvas-wrap.tall { height: 225px; }
+
+    .app-loader .loader-brand { font-size: 30px; }
+    .app-loader .loom-ring    { width: 88px; height: 88px; }
+}
+
+
+/* ============================================================
+   6. Phone in landscape (short viewport) - keep modals usable
+   ============================================================ */
+@media screen and (max-height: 520px) and (orientation: landscape) {
+
+    .analysis-gate      { align-items: flex-start; padding: 8px; }
+    .analysis-gate-card {
+        max-height: calc(100vh - 16px);
+        max-height: calc(100dvh - 16px);
+        padding: 14px;
+    }
+    .analysis-gate-card .gate-icon { width: 38px; height: 38px; font-size: 16px; margin-bottom: 8px; }
+
+    .app-loader .loom-ring    { width: 76px; height: 76px; margin-bottom: 12px; }
+    .app-loader .loader-brand { font-size: 28px; }
+}
+
+
+/* ============================================================
+   7. Touch devices - no sticky hover states, bigger hit targets
+   ============================================================ */
+@media (hover: none) {
+
+    /* A :hover lift on a touch screen stays stuck after the tap. */
+    .tab-btn:hover,
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .btn-danger:hover,
+    .btn-generate:hover,
+    .export-btn:hover,
+    .export-btn.analysis-btn:hover,
+    .page-btn:hover,
+    .back-btn:hover,
+    .kpi:hover,
+    .suppliers-toolbar .btn-primary:hover,
+    .refund-actions .btn-primary:hover,
+    .gate-buttons .btn-primary:hover,
+    .print-icon:hover,
+    .float-actions button:hover {
+        transform: none;
+    }
+    tr:hover,
+    .table-card tbody tr:hover,
+    #suppliersTable tbody tr:hover { background: inherit; }
+
+    /* Comfortable ~40px targets for the icon-only controls. */
+    .action-icon,
+    .print-icon,
+    .remove-btn {
+        min-width: 38px;
+        min-height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .supplier-actions { gap: 6px; }
+
+    /* Tooltips are mouse-only; they just clutter a touch UI. */
+    [data-tooltip]:before { display: none; }
+}

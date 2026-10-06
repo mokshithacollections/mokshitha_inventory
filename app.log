@@ -1,0 +1,245 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------------< com.mc:mc_ims >----------------------------
+[INFO] Building mc_ims 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:4.0.2:run (default-cli) > test-compile @ mc_ims >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ mc_ims ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 12 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ mc_ims ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ mc_ims ---
+[INFO] skip non existing resourceDirectory D:\Java Web Projects VT\mc_ims\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ mc_ims ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:4.0.2:run (default-cli) < test-compile @ mc_ims <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:4.0.2:run (default-cli) @ mc_ims ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.2)
+
+2026-07-11T12:16:55.289+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : Starting McImsApplication using Java 21.0.10 with PID 45784 (D:\Java Web Projects VT\mc_ims\target\classes started by User in D:\Java Web Projects VT\mc_ims)
+2026-07-11T12:16:55.290+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-07-11T12:16:55.346+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-07-11T12:16:55.346+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-07-11T12:16:56.038+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-11T12:16:56.134+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 92 ms. Found 7 JPA repository interfaces.
+2026-07-11T12:16:57.021+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8081 (http)
+2026-07-11T12:16:57.033+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-11T12:16:57.033+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-07-11T12:16:57.200+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2026-07-11T12:16:57.205+05:30  INFO 45784 --- [mc_ims] [  restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1854 ms
+2026-07-11T12:16:57.368+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-07-11T12:16:57.420+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.1.Final
+2026-07-11T12:16:57.889+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-11T12:16:57.925+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-07-11T12:16:58.143+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3d549b9d
+2026-07-11T12:16:58.143+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-07-11T12:16:58.191+05:30  WARN 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-11T12:16:58.223+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/mc_ims]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 18.1
+	Default catalog/schema: mc_ims/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-11T12:16:59.324+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-11T12:16:59.451+05:30  INFO 45784 --- [mc_ims] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-11T12:16:59.546+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-07-11T12:17:00.681+05:30  WARN 45784 --- [mc_ims] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-11T12:17:01.091+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8081 (http) with context path '/'
+2026-07-11T12:17:01.097+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : Started McImsApplication in 6.253 seconds (process running for 6.798)
+2026-07-11T12:23:52.630+05:30  WARN 45784 --- [mc_ims] [l-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m24s317ms125µs).
+2026-07-11T14:20:20.959+05:30  WARN 45784 --- [mc_ims] [l-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h31m27s971ms80µs400ns).
+2026-07-11T15:01:43.865+05:30  WARN 45784 --- [mc_ims] [l-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=12m52s454ms300ns).
+2026-07-11T15:21:40.706+05:30  WARN 45784 --- [mc_ims] [l-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m26s800ms474µs100ns).
+2026-07-11T15:39:58.079+05:30  WARN 45784 --- [mc_ims] [l-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=4m47s204ms402µs500ns).
+2026-07-11T15:51:38.057+05:30  WARN 45784 --- [mc_ims] [l-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=5m39s873ms966µs700ns).
+2026-07-11T16:27:49.377+05:30  WARN 45784 --- [mc_ims] [l-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=30m11s229ms287µs100ns).
+2026-07-11T16:31:58.747+05:30  WARN 45784 --- [mc_ims] [l-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=4m9s369ms475µs900ns).
+2026-07-11T16:36:38.620+05:30  INFO 45784 --- [mc_ims] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 17 class path changes (3 additions, 0 deletions, 14 modifications)
+2026-07-11T16:36:38.674+05:30  INFO 45784 --- [mc_ims] [       Thread-1] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-07-11T16:36:38.701+05:30  INFO 45784 --- [mc_ims] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-07-11T16:36:38.718+05:30  INFO 45784 --- [mc_ims] [       Thread-1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-11T16:36:38.753+05:30  INFO 45784 --- [mc_ims] [       Thread-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-07-11T16:36:38.764+05:30  INFO 45784 --- [mc_ims] [       Thread-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.2)
+
+2026-07-11T16:36:39.035+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : Starting McImsApplication using Java 21.0.10 with PID 45784 (D:\Java Web Projects VT\mc_ims\target\classes started by User in D:\Java Web Projects VT\mc_ims)
+2026-07-11T16:36:39.035+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-07-11T16:36:39.350+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-11T16:36:39.382+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 32 ms. Found 7 JPA repository interfaces.
+2026-07-11T16:36:39.572+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8081 (http)
+2026-07-11T16:36:39.576+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-11T16:36:39.576+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-07-11T16:36:39.744+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2026-07-11T16:36:39.752+05:30  INFO 45784 --- [mc_ims] [  restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 712 ms
+2026-07-11T16:36:39.803+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-07-11T16:36:39.863+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-11T16:36:39.867+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-07-11T16:36:39.959+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@43418b9f
+2026-07-11T16:36:39.959+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-07-11T16:36:39.974+05:30  WARN 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-11T16:36:39.984+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/mc_ims]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 18.1
+	Default catalog/schema: mc_ims/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-11T16:36:40.779+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-11T16:36:41.052+05:30  INFO 45784 --- [mc_ims] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-11T16:36:41.678+05:30  WARN 45784 --- [mc_ims] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-11T16:36:42.054+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8081 (http) with context path '/'
+2026-07-11T16:36:42.066+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : Started McImsApplication in 3.08 seconds (process running for 15587.766)
+2026-07-11T16:36:42.072+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-07-11T16:37:16.449+05:30  INFO 45784 --- [mc_ims] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-07-11T16:37:16.453+05:30  INFO 45784 --- [mc_ims] [       Thread-5] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-07-11T16:37:16.492+05:30  INFO 45784 --- [mc_ims] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-07-11T16:37:16.503+05:30  INFO 45784 --- [mc_ims] [       Thread-5] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-11T16:37:16.505+05:30  INFO 45784 --- [mc_ims] [       Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2026-07-11T16:37:16.519+05:30  INFO 45784 --- [mc_ims] [       Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.2)
+
+2026-07-11T16:37:16.725+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : Starting McImsApplication using Java 21.0.10 with PID 45784 (D:\Java Web Projects VT\mc_ims\target\classes started by User in D:\Java Web Projects VT\mc_ims)
+2026-07-11T16:37:16.726+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-07-11T16:37:17.054+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-11T16:37:17.103+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 44 ms. Found 7 JPA repository interfaces.
+2026-07-11T16:37:17.317+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8081 (http)
+2026-07-11T16:37:17.319+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-11T16:37:17.319+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-07-11T16:37:17.552+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2026-07-11T16:37:17.555+05:30  INFO 45784 --- [mc_ims] [  restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 825 ms
+2026-07-11T16:37:17.641+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-07-11T16:37:17.691+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-11T16:37:17.693+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2026-07-11T16:37:21.250+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection org.postgresql.jdbc.PgConnection@6754679
+2026-07-11T16:37:21.250+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2026-07-11T16:37:21.556+05:30  WARN 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-11T16:37:22.742+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://dpg-d8mlovjbc2fs73e4mkk0-a.oregon-postgres.render.com/mokshitha_db?currentSchema=inventory]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 18.4
+	Default catalog/schema: mokshitha_db/inventory
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-11T16:37:23.097+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: create table inventory.credit_note_items (id bigint generated by default as identity, color varchar(50), description varchar(150) not null, product_id varchar(50) not null, quantity integer not null, total_value numeric(12,2) not null, unit_value numeric(12,2) not null, credit_note_id varchar(20), primary key (id))
+Hibernate: create table inventory.credit_notes (credit_note_id varchar(20) not null, amount numeric(12,2) not null, created_time time(0) not null, credit_date date not null, notes varchar(500), reason varchar(50), reduce_stock BOOLEAN DEFAULT FALSE not null, reference varchar(60), supplier_id varchar(20) not null, supplier_name varchar(200) not null, primary key (credit_note_id))
+Hibernate: create table inventory.purchase_invoices (purchase_id varchar(20) not null, amount_paid DECIMAL(12,2) DEFAULT 0 not null, created_time time(0) not null, notes varchar(500), payment_mode varchar(50), purchase_date date not null, supplier_id varchar(20) not null, supplier_invoice_no varchar(60), supplier_name varchar(200) not null, total_amount numeric(12,2) not null, primary key (purchase_id))
+Hibernate: create table inventory.purchase_items (id bigint generated by default as identity, color varchar(50), cost_price numeric(12,2) not null, description varchar(150) not null, product_id varchar(50) not null, quantity integer not null, total_price numeric(12,2) not null, purchase_id varchar(20), primary key (id))
+Hibernate: create table inventory.supplier_payments (payment_id varchar(20) not null, amount numeric(12,2) not null, created_time time(0) not null, mode varchar(50), notes varchar(500), payment_date date not null, reference varchar(100), supplier_id varchar(20) not null, primary key (payment_id))
+Hibernate: create index idx_credit_note_id on inventory.credit_note_items (credit_note_id)
+Hibernate: create index idx_credit_supplier on inventory.credit_notes (supplier_id)
+Hibernate: create index idx_credit_date on inventory.credit_notes (credit_date)
+Hibernate: create index idx_purchase_supplier on inventory.purchase_invoices (supplier_id)
+Hibernate: create index idx_purchase_date on inventory.purchase_invoices (purchase_date)
+Hibernate: create index idx_purchase_id on inventory.purchase_items (purchase_id)
+Hibernate: create index idx_payment_supplier on inventory.supplier_payments (supplier_id)
+Hibernate: create index idx_payment_date on inventory.supplier_payments (payment_date)
+Hibernate: alter table if exists inventory.credit_note_items add constraint FKiw6h56sqsf6m773dntsef271t foreign key (credit_note_id) references inventory.credit_notes
+Hibernate: alter table if exists inventory.purchase_items add constraint FKfjj9uatkqv1jt1mdyl32tdtvj foreign key (purchase_id) references inventory.purchase_invoices
+2026-07-11T16:37:29.851+05:30  INFO 45784 --- [mc_ims] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-11T16:37:30.254+05:30  WARN 45784 --- [mc_ims] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-11T16:37:30.472+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8081 (http) with context path '/'
+2026-07-11T16:37:30.481+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : Started McImsApplication in 13.857 seconds (process running for 15636.181)
+2026-07-11T16:37:30.485+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-07-11T16:37:41.187+05:30  INFO 45784 --- [mc_ims] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-07-11T16:37:41.191+05:30  INFO 45784 --- [mc_ims] [       Thread-9] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-07-11T16:37:41.212+05:30  INFO 45784 --- [mc_ims] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-07-11T16:37:41.220+05:30  INFO 45784 --- [mc_ims] [       Thread-9] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-11T16:37:41.225+05:30  INFO 45784 --- [mc_ims] [       Thread-9] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown initiated...
+2026-07-11T16:37:44.289+05:30  INFO 45784 --- [mc_ims] [       Thread-9] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.2)
+
+2026-07-11T16:37:44.458+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : Starting McImsApplication using Java 21.0.10 with PID 45784 (D:\Java Web Projects VT\mc_ims\target\classes started by User in D:\Java Web Projects VT\mc_ims)
+2026-07-11T16:37:44.459+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-07-11T16:37:44.762+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-11T16:37:44.808+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 42 ms. Found 7 JPA repository interfaces.
+2026-07-11T16:37:44.990+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8081 (http)
+2026-07-11T16:37:44.992+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-11T16:37:44.993+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-07-11T16:37:45.236+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2026-07-11T16:37:45.238+05:30  INFO 45784 --- [mc_ims] [  restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 774 ms
+2026-07-11T16:37:45.316+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-07-11T16:37:45.368+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-11T16:37:45.370+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Starting...
+2026-07-11T16:37:45.473+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-4 - Added connection org.postgresql.jdbc.PgConnection@3d56f45b
+2026-07-11T16:37:45.473+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Start completed.
+2026-07-11T16:37:45.482+05:30  WARN 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-11T16:37:45.491+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/mc_ims]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 18.1
+	Default catalog/schema: mc_ims/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-11T16:37:45.852+05:30  INFO 45784 --- [mc_ims] [  restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-11T16:37:45.939+05:30  INFO 45784 --- [mc_ims] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-11T16:37:46.396+05:30  WARN 45784 --- [mc_ims] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-11T16:37:46.653+05:30  INFO 45784 --- [mc_ims] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8081 (http) with context path '/'
+2026-07-11T16:37:46.659+05:30  INFO 45784 --- [mc_ims] [  restartedMain] com.mc.mc_ims.McImsApplication           : Started McImsApplication in 2.261 seconds (process running for 15652.359)
+2026-07-11T16:37:46.662+05:30  INFO 45784 --- [mc_ims] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-07-11T19:05:14.056+05:30  WARN 45784 --- [mc_ims] [l-4:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-4 - Thread starvation or clock leap detected (housekeeper delta=4m56s195ms140µs500ns).
+2026-07-11T19:19:35.509+05:30  WARN 45784 --- [mc_ims] [l-4:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-4 - Thread starvation or clock leap detected (housekeeper delta=4m21s309ms712µs100ns).

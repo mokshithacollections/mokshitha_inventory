@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in — Mokshitha</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --maroon-deep: #3d0008;
+            --maroon:      #55000c;
+            --maroon-lit:  #880012;
+            --gold:        #C59B45;
+            --gold-pale:   #f4e6bf;
+            --ink:         #1f2937;
+            --ink-soft:    #6b7280;
+            --line:        #e5e7eb;
+            --red:         #b5292a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: var(--ink);
+            /* Deep maroon ground with a woven thread texture, echoing the
+               loading splash the user sees a second later. */
+            background-color: var(--maroon-deep);
+            background-image:
+                radial-gradient(1100px 600px at 50% -20%, rgba(197,155,69,0.22) 0%, rgba(197,155,69,0) 60%),
+                repeating-linear-gradient( 45deg, rgba(197,155,69,0.055) 0 6px, transparent 6px 12px),
+                repeating-linear-gradient(-45deg, rgba(255,255,255,0.035) 0 6px, transparent 6px 12px),
+                linear-gradient(160deg, var(--maroon) 0%, var(--maroon-deep) 55%, #2a0006 100%);
+        }
+
+        /* ===================== CARD ===================== */
+        .login-card {
+            width: 100%;
+            max-width: 940px;
+            background: #fff;
+            border-radius: 22px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1.05fr 1fr;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.45);
+            animation: cardRise 0.5s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+        }
+        @keyframes cardRise {
+            from { opacity: 0; transform: translateY(18px) scale(0.985); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ---------- Left: brand panel ---------- */
+        .brand-side {
+            position: relative;
+            padding: 46px 42px;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: var(--maroon);
+            background-image:
+                radial-gradient(520px 300px at 20% 0%, rgba(197,155,69,0.26) 0%, rgba(197,155,69,0) 65%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.045) 0 7px, transparent 7px 14px),
+                linear-gradient(165deg, var(--maroon-lit) 0%, var(--maroon) 45%, var(--maroon-deep) 100%);
+        }
+        /* Thin gold seam between the two halves. */
+        .brand-side::after {
+            content: "";
+            position: absolute;
+            top: 0; right: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom,
+                rgba(197,155,69,0) 0%, var(--gold) 25%, var(--gold-pale) 50%, var(--gold) 75%, rgba(197,155,69,0) 100%);
+        }
+
+        .brand-logo {
+            width: 92px; height: 92px;
+            border-radius: 50%;
+            background: #fff;
+            padding: 10px;
+            object-fit: contain;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.3), 0 0 0 1px rgba(197,155,69,0.5);
+            margin-bottom: 24px;
+        }
+        .brand-name {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 43px;
+            font-weight: 700;
+            line-height: 1.02;
+            letter-spacing: 0.5px;
+            background: linear-gradient(100deg, #b08a2c 0%, var(--gold) 28%, var(--gold-pale) 52%, var(--gold) 74%, #b08a2c 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+        .brand-rule {
+            width: 54px; height: 2px;
+            background: var(--gold);
+            margin: 16px 0 14px;
+            opacity: 0.85;
+        }
+        .brand-tag {
+            font-size: 11.5px;
+            font-weight: 500;
+            letter-spacing: 3.6px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.72);
+            line-height: 1.7;
+        }
+        /* ---------- Right: the form ---------- */
+        .form-side {
+            padding: 46px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .form-head h1 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 31px;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.1;
+        }
+        .form-head p {
+            margin-top: 6px;
+            font-size: 13.5px;
+            color: var(--ink-soft);
+        }
+
+        form { margin-top: 26px; }
+
+        .field { margin-bottom: 16px; }
+        .field label {
+            display: block;
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            margin-bottom: 7px;
+        }
+        .input-wrap { position: relative; }
+        .input-wrap > i.lead {
+            position: absolute;
+            left: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: #b6bcc5;
+            font-size: 14px;
+            pointer-events: none;
+        }
+        .field input {
+            width: 100%;
+            /* 16px keeps iOS from zooming the page when the field is focused. */
+            font-size: 16px;
+            padding: 13px 15px 13px 42px;
+            border: 1.5px solid var(--line);
+            border-radius: 11px;
+            background: #fcfcfd;
+            color: var(--ink);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        .field input::placeholder { color: #b6bcc5; }
+        .field input:focus {
+            outline: none;
+            background: #fff;
+            border-color: var(--maroon-lit);
+            box-shadow: 0 0 0 4px rgba(136, 0, 18, 0.10);
+        }
+        .field input:-webkit-autofill {
+            -webkit-text-fill-color: var(--ink);
+            -webkit-box-shadow: 0 0 0 30px #fcfcfd inset;
+        }
+
+        .toggle-pw {
+            position: absolute;
+            right: 6px; top: 50%;
+            transform: translateY(-50%);
+            width: 38px; height: 38px;
+            display: flex; align-items: center; justify-content: center;
+            border: none;
+            background: transparent;
+            color: #9aa1ab;
+            cursor: pointer;
+            border-radius: 9px;
+            font-size: 14px;
+        }
+        .toggle-pw:hover { color: var(--maroon-lit); background: rgba(136,0,18,0.06); }
+
+        .btn-signin {
+            width: 100%;
+            margin-top: 8px;
+            padding: 14px;
+            border: none;
+            border-radius: 11px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: #fff;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            background: linear-gradient(to right, var(--maroon) 0%, var(--maroon-lit) 50%, var(--maroon) 100%);
+            background-size: 200% auto;
+            box-shadow: 0 8px 20px rgba(85, 0, 12, 0.3);
+            transition: background-position 0.4s ease, transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .btn-signin:hover {
+            background-position: right center;
+            transform: translateY(-1px);
+            box-shadow: 0 12px 26px rgba(85, 0, 12, 0.38);
+        }
+        .btn-signin:active { transform: translateY(0); }
+        .btn-signin[disabled] { opacity: 0.7; cursor: progress; }
+
+        /* ---------- Messages ---------- */
+        .msg {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.45;
+            margin-bottom: 18px;
+        }
+        .msg i { margin-top: 1px; }
+        .msg.error  { background: rgba(181, 41, 42, 0.09);  color: #8c1f20; border: 1px solid rgba(181,41,42,0.18); }
+        .msg.ok     { background: rgba(14, 122, 95, 0.09);  color: #0b5c47; border: 1px solid rgba(14,122,95,0.18); }
+        .msg.info   { background: rgba(197, 155, 69, 0.13); color: #7a5f1c; border: 1px solid rgba(197,155,69,0.28); }
+
+        /* ===================== RESPONSIVE ===================== */
+        @media screen and (max-width: 880px) {
+            body { padding: 0; align-items: stretch; }
+            .login-card {
+                grid-template-columns: 1fr;
+                max-width: none;
+                min-height: 100vh;
+                min-height: 100dvh;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            /* The brand panel becomes a compact banner above the form. */
+            .brand-side {
+                padding: 30px 26px 26px;
+                text-align: center;
+                align-items: center;
+            }
+            .brand-side::after {
+                top: auto; left: 0; right: 0; bottom: 0;
+                width: auto; height: 2px;
+                background: linear-gradient(to right,
+                    rgba(197,155,69,0) 0%, var(--gold) 30%, var(--gold-pale) 50%, var(--gold) 70%, rgba(197,155,69,0) 100%);
+            }
+            .brand-logo  { width: 72px; height: 72px; margin-bottom: 16px; }
+            .brand-name  { font-size: 34px; }
+            .brand-rule  { margin: 12px auto 11px; }
+            .form-side   { padding: 30px 24px 36px; }
+        }
+
+        @media screen and (max-width: 420px) {
+            .brand-side  { padding: 24px 18px 20px; }
+            .brand-logo  { width: 62px; height: 62px; margin-bottom: 12px; }
+            .brand-name  { font-size: 29px; }
+            .brand-tag   { font-size: 10.5px; letter-spacing: 2.8px; }
+            .form-side   { padding: 26px 18px 30px; }
+            .form-head h1 { font-size: 26px; }
+        }
+
+        /* Phone in landscape: the card must not become taller than the screen. */
+        @media screen and (max-height: 560px) and (orientation: landscape) {
+            .login-card { min-height: 0; grid-template-columns: 1fr 1.15fr; }
+            .brand-side { padding: 22px; }
+            .brand-logo { width: 54px; height: 54px; margin-bottom: 10px; }
+            .brand-name { font-size: 26px; }
+            .form-side  { padding: 22px 24px; }
+        }
+
+        @media (hover: none) {
+            .btn-signin:hover { transform: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .login-card { animation: none; }
+            .btn-signin { transition: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="login-card">
+
+        <!-- ===== Brand ===== -->
+        <section class="brand-side">
+            <img th:src="@{/img/mc_img.png}" alt="" class="brand-logo">
+            <div class="brand-name">Mokshitha</div>
+            <div class="brand-rule"></div>
+            <div class="brand-tag">Collections &nbsp;·&nbsp; Textiles</div>
+        </section>
+
+        <!-- ===== Form ===== -->
+        <section class="form-side">
+            <div class="form-head">
+                <h1>Welcome back</h1>
+                <p>Sign in to open the inventory dashboard.</p>
+            </div>
+
+            <!-- Status messages. Deliberately vague on failure: saying which of
+                 the two fields was wrong tells an attacker which accounts exist. -->
+            <div th:if="${param.error}" class="msg error" role="alert">
+                <i class="fas fa-circle-exclamation"></i>
+                <span>Incorrect email or password. Please try again.</span>
+            </div>
+            <div th:if="${param.logout}" class="msg ok" role="status">
+                <i class="fas fa-circle-check"></i>
+                <span>You have been signed out.</span>
+            </div>
+            <div th:if="${param.expired}" class="msg info" role="status">
+                <i class="fas fa-clock-rotate-left"></i>
+                <span>Your session expired. Please sign in again.</span>
+            </div>
+            <div th:if="${param.changed}" class="msg ok" role="status">
+                <i class="fas fa-key"></i>
+                <span>Password changed. Sign in with your new password.</span>
+            </div>
+
+            <form method="post" action="/login" th:action="@{/login}" id="loginForm" novalidate>
+
+                <div class="field">
+                    <label for="username">Email</label>
+                    <div class="input-wrap">
+                        <i class="fas fa-envelope lead"></i>
+                        <input type="email" id="username" name="username"
+                               placeholder="you@example.com"
+                               autocomplete="username"
+                               autocapitalize="none" spellcheck="false"
+                               required autofocus>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <i class="fas fa-lock lead"></i>
+                        <input type="password" id="password" name="password"
+                               placeholder="Your password"
+                               autocomplete="current-password" required>
+                        <button type="button" class="toggle-pw" id="togglePw"
+                                aria-label="Show password" title="Show password">
+                            <i class="fas fa-eye" id="togglePwIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-signin" id="signInBtn">
+                    <i class="fas fa-right-to-bracket"></i>
+                    <span>Sign in</span>
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        // Show / hide password
+        (function () {
+            var btn  = document.getElementById('togglePw');
+            var pw   = document.getElementById('password');
+            var icon = document.getElementById('togglePwIcon');
+            btn.addEventListener('click', function () {
+                var show = pw.type === 'password';
+                pw.type = show ? 'text' : 'password';
+                icon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+                btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+                btn.setAttribute('title',      show ? 'Hide password' : 'Show password');
+                pw.focus();
+            });
+        })();
+
+        // Stop a double tap submitting the form twice.
+        (function () {
+            var form = document.getElementById('loginForm');
+            var btn  = document.getElementById('signInBtn');
+            form.addEventListener('submit', function () {
+                if (!form.checkValidity()) return;
+                btn.disabled = true;
+                btn.querySelector('span').textContent = 'Signing in…';
+            });
+        })();
+
+        // If the email is already filled (browser autofill), start on the password.
+        (function () {
+            var u = document.getElementById('username');
+            if (u && u.value) document.getElementById('password').focus();
+        })();
+    </script>
+</body>
+</html>

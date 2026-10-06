@@ -1,0 +1,38 @@
+# Everything here is excluded from the build context that gets sent to the
+# Docker daemon. Without this, `target/` alone makes the context hundreds of
+# megabytes and every build re-uploads it.
+
+# Build output — the image builds its own jar from source
+target/
+build/
+out/
+
+# IDE / tooling
+.settings/
+.project
+.classpath
+.idea/
+*.iml
+.vscode/
+bin/
+
+# VCS
+.git/
+.gitignore
+.gitattributes
+
+# Local runtime noise
+*.log
+app.log
+logs/
+
+# Docs and local-only files
+HELP.md
+README.md
+*.md
+
+# Never let local secrets or overrides leak into an image
+application-local.properties
+application-dev.properties
+.env
+.env.*

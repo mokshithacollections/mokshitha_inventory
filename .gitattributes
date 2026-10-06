@@ -1,0 +1,8 @@
+/mvnw text eol=lf
+*.cmd text eol=crlf
+
+# Shell scripts must keep LF endings. A CRLF docker-entrypoint.sh fails inside
+# the Linux container with "bad interpreter: /bin/sh^M" — and because Render
+# clones the repo and builds there, that would only show up in production.
+*.sh text eol=lf
+Dockerfile text eol=lf

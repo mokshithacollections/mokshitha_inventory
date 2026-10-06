@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchases — Mokshitha</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Reuse the same stylesheet as home so all the .purchases-section, .supplier-form-grid,
+         .balance-pill, .status-badge, .analysis-gate, etc. rules are available here too. -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/home.css}">
+
+    <style>
+        /* ============================================================
+           Page-level layout overrides — only what's specific to this
+           dedicated page (header, body background). Everything else
+           comes from home.css.
+           ============================================================ */
+        body {
+            background: #f3f5fa;
+            padding: 24px;
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .page-header {
+            max-width: 1500px;
+            margin: 0 auto 22px;
+            background: white;
+            border-radius: 16px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+        .page-header .title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .page-header .title-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2563eb 0%, #4f7cf7 100%);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3);
+        }
+        .page-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+            line-height: 1;
+        }
+        .page-header .subtitle {
+            font-size: 12px;
+            color: #9ca3af;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.15s ease;
+        }
+        .back-btn:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        /* On this dedicated page, the purchases-section card should fill the layout
+           without the auto-margin (already centered by max-width). */
+        .purchases-section {
+            margin-top: 0;
+        }
+    </style>
+
+    <!-- Responsive layer — must load LAST so it can override home.css and the
+         page-level overrides above. -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/responsive.css}">
+</head>
+<body>
+
+    <!-- ====== HEADER ====== -->
+    <div class="page-header">
+        <div class="title">
+            <div class="title-icon"><i class="fas fa-truck"></i></div>
+            <div>
+                <h1>Purchases</h1>
+                <div class="subtitle">Suppliers · Invoices · Credit Notes · Ledger</div>
+            </div>
+        </div>
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- ====== PURCHASES SECTION ====== -->
+    <div class="purchases-section">
+        <!-- Sub-tabs inside Purchases -->
+        <div class="purchase-tabs">
+            <button class="purchase-tab-btn active" onclick="switchPurchaseTab('suppliers')">
+                <i class="fas fa-handshake"></i> Suppliers
+            </button>
+            <button class="purchase-tab-btn" onclick="switchPurchaseTab('invoices')">
+                <i class="fas fa-file-invoice"></i> Purchase Invoices
+            </button>
+            <button class="purchase-tab-btn" onclick="switchPurchaseTab('credit-notes')">
+                <i class="fas fa-receipt"></i> Credit Notes
+            </button>
+            <button class="purchase-tab-btn" onclick="switchPurchaseTab('ledger')">
+                <i class="fas fa-book"></i> Supplier Ledger
+            </button>
+            <button class="purchase-tab-btn" onclick="switchPurchaseTab('price-check')">
+                <i class="fas fa-tags"></i> Price Check
+            </button>
+        </div>
+
+        <!-- ===== Suppliers tab content ===== -->
+        <div id="suppliersTab" class="purchase-tab-content">
+
+            <!-- Top toolbar -->
+            <div class="suppliers-toolbar">
+                <div class="suppliers-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="supplierSearch"
+                           placeholder="Search by supplier name..."
+                           oninput="filterSuppliers()">
+                </div>
+                <label class="show-inactive">
+                    <input type="checkbox" id="showInactiveSuppliers" onchange="loadSuppliers()">
+                    Show inactive
+                </label>
+                <button class="btn-primary" onclick="openSupplierForm()">
+                    <i class="fas fa-plus"></i> Add Supplier
+                </button>
+            </div>
+
+            <!-- Suppliers table -->
+            <div class="table-container">
+                <table id="suppliersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Contact Person</th>
+                            <th>Phone</th>
+                            <th>GST</th>
+                            <th>Payment Terms</th>
+                            <th class="right">Balance</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="suppliersTableBody">
+                        <tr class="empty-row"><td colspan="9" class="muted-cell">Loading suppliers…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Purchase Invoices tab content ===== -->
+        <div id="invoicesTab" class="purchase-tab-content" style="display:none;">
+
+            <div class="suppliers-toolbar">
+                <div class="suppliers-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="purchaseSearch"
+                           placeholder="Search by supplier or purchase ID..."
+                           oninput="renderPurchases()">
+                </div>
+                <button class="btn-primary" onclick="openPurchaseForm()">
+                    <i class="fas fa-plus"></i> New Purchase
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table id="purchasesTable">
+                    <thead>
+                        <tr>
+                            <th>Purchase ID</th>
+                            <th>Date</th>
+                            <th>Supplier</th>
+                            <th>Supplier Inv #</th>
+                            <th>Items</th>
+                            <th class="right">Total</th>
+                            <th class="right">Paid</th>
+                            <th class="right">Balance</th>
+                            <th>Bill</th>
+                        </tr>
+                    </thead>
+                    <tbody id="purchasesTableBody">
+                        <tr class="empty-row"><td colspan="9" class="muted-cell">Loading purchases…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- ===== Credit Notes tab content ===== -->
+        <div id="creditNotesTab" class="purchase-tab-content" style="display:none;">
+            <div class="suppliers-toolbar">
+                <div class="suppliers-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="creditNoteSearch"
+                           placeholder="Search by supplier, reason or ID..."
+                           oninput="renderCreditNotes()">
+                </div>
+                <button class="btn-primary" onclick="openCreditNoteForm()">
+                    <i class="fas fa-plus"></i> New Credit Note
+                </button>
+            </div>
+            <div class="table-container">
+                <table id="creditNotesTable">
+                    <thead>
+                        <tr>
+                            <th>Credit Note ID</th>
+                            <th>Date</th>
+                            <th>Supplier</th>
+                            <th>Reason</th>
+                            <th>Ref</th>
+                            <th>Stock?</th>
+                            <th class="right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="creditNotesTableBody">
+                        <tr class="empty-row"><td colspan="7" class="muted-cell">Loading credit notes…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Supplier Ledger tab content ===== -->
+        <div id="ledgerTab" class="purchase-tab-content" style="display:none;">
+            <div class="suppliers-toolbar">
+                <div class="suppliers-search" style="flex:0 0 auto;">
+                    <i class="fas fa-handshake"></i>
+                    <select id="ledgerSupplier" onchange="loadLedger()" style="border:none;outline:none;background:transparent;min-width:280px;">
+                        <option value="">— select a supplier —</option>
+                    </select>
+                </div>
+                <div id="ledgerClosing" class="muted-cell" style="margin-left:auto;font-weight:600;"></div>
+            </div>
+            <div class="table-container">
+                <table id="ledgerTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Ref</th>
+                            <th>Description</th>
+                            <th class="right">Debit (+owed)</th>
+                            <th class="right">Credit (−owed)</th>
+                            <th class="right">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledgerTableBody">
+                        <tr class="empty-row"><td colspan="7" class="muted-cell">Select a supplier to view their statement</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Price Check tab content ===== -->
+        <div id="priceCheckTab" class="purchase-tab-content" style="display:none;">
+            <div class="suppliers-toolbar">
+                <div class="suppliers-search" style="flex:1;min-width:280px;">
+                    <i class="fas fa-barcode"></i>
+                    <input type="text" id="pcScan"
+                           placeholder="Scan barcode or type Product ID / name, then press Enter"
+                           onkeydown="scanPriceCheck(event)" autocomplete="off">
+                </div>
+            </div>
+
+            <!-- Product summary card (filled after a lookup) -->
+            <div id="pcSummary" style="display:none; margin-bottom:14px;"></div>
+
+            <div class="table-container">
+                <table id="priceCheckTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Supplier</th>
+                            <th>Purchase ID</th>
+                            <th class="right">Qty</th>
+                            <th class="right">Cost / unit</th>
+                            <th class="right">Line Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="priceCheckTableBody">
+                        <tr class="empty-row"><td colspan="6" class="muted-cell">Scan or type a Product ID to see its purchase price history</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== SUPPLIER FORM MODAL ====== -->
+    <div id="supplierModal" class="analysis-gate" style="display:none;">
+        <div class="analysis-gate-card supplier-modal-card">
+            <div class="gate-icon supplier-icon"><i class="fas fa-handshake"></i></div>
+            <h3 id="supplierModalTitle">Add Supplier</h3>
+            <p id="supplierModalSubtitle">Enter supplier details. ID will be auto-generated.</p>
+
+            <div class="supplier-form-grid">
+                <div class="sf-field">
+                    <label>Supplier Name <span class="req">*</span></label>
+                    <input type="text" id="sfName" placeholder="e.g., Kanchipuram Silks Pvt Ltd">
+                </div>
+                <div class="sf-field">
+                    <label>Contact Person</label>
+                    <input type="text" id="sfContactPerson" placeholder="e.g., Mr. Raghavan">
+                </div>
+                <div class="sf-field">
+                    <label>Phone</label>
+                    <input type="tel" id="sfPhone" placeholder="10-digit mobile" maxlength="15">
+                </div>
+                <div class="sf-field">
+                    <label>Email</label>
+                    <input type="email" id="sfEmail" placeholder="optional">
+                </div>
+                <div class="sf-field full">
+                    <label>Address</label>
+                    <input type="text" id="sfAddress" placeholder="optional">
+                </div>
+                <div class="sf-field">
+                    <label>GST Number</label>
+                    <input type="text" id="sfGstNumber" placeholder="optional">
+                </div>
+                <div class="sf-field">
+                    <label>Payment Terms</label>
+                    <select id="sfPaymentTerms">
+                        <option value="">— select —</option>
+                        <option value="Cash on Delivery">Cash on Delivery</option>
+                        <option value="Net 7">Net 7 days</option>
+                        <option value="Net 15">Net 15 days</option>
+                        <option value="Net 30">Net 30 days</option>
+                        <option value="Net 60">Net 60 days</option>
+                        <option value="Advance 50%">Advance 50%</option>
+                        <option value="Advance 100%">Advance 100%</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="sf-field">
+                    <label>Opening Balance <small>(only at creation)</small></label>
+                    <input type="number" id="sfOpeningBalance" placeholder="0" step="0.01" min="0">
+                </div>
+                <div class="sf-field full">
+                    <label>Notes</label>
+                    <input type="text" id="sfNotes" placeholder="optional">
+                </div>
+            </div>
+
+            <div id="supplierModalError" class="gate-error"></div>
+
+            <div class="gate-buttons">
+                <button class="btn-secondary" onclick="closeSupplierForm()">Cancel</button>
+                <button class="btn-primary" id="sfSaveBtn" onclick="saveSupplier()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== NEW PURCHASE MODAL ====== -->
+    <div id="purchaseModal" class="analysis-gate" style="display:none;">
+        <div class="analysis-gate-card purchase-modal-card" style="max-width:840px;width:96%;">
+            <div class="gate-icon supplier-icon"><i class="fas fa-file-invoice"></i></div>
+            <h3>New Purchase</h3>
+            <p>Record goods bought from a supplier. Saving will add these quantities to stock.</p>
+
+            <div class="supplier-form-grid">
+                <div class="sf-field">
+                    <label>Supplier <span class="req">*</span></label>
+                    <select id="pfSupplier"><option value="">— select supplier —</option></select>
+                </div>
+                <div class="sf-field">
+                    <label>Supplier Invoice #</label>
+                    <input type="text" id="pfSupplierInvoiceNo" placeholder="on their paper bill (optional)">
+                </div>
+                <div class="sf-field">
+                    <label>Purchase Date</label>
+                    <input type="date" id="pfPurchaseDate">
+                </div>
+                <div class="sf-field">
+                    <label>Payment Mode</label>
+                    <select id="pfPaymentMode">
+                        <option value="">— select —</option>
+                        <option value="Cash">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Cheque">Cheque</option>
+                        <option value="Credit">On Credit (unpaid)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Line items -->
+            <div style="margin-top:14px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
+                    <strong>Items</strong>
+                    <div class="suppliers-search" style="flex:1;min-width:260px;">
+                        <i class="fas fa-barcode"></i>
+                        <input type="text" id="pfScan"
+                               placeholder="Scan barcode or type Product ID, then press Enter"
+                               onkeydown="scanAddPurchaseLine(event)" autocomplete="off">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="purchaseLinesTable">
+                        <thead>
+                            <tr>
+                                <th style="min-width:260px;">Product</th>
+                                <th style="width:90px;">Qty</th>
+                                <th style="width:130px;">Cost / unit</th>
+                                <th class="right" style="width:120px;">Line Total</th>
+                                <th style="width:44px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="purchaseLinesBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="supplier-form-grid" style="margin-top:14px;">
+                <div class="sf-field">
+                    <label>Amount Paid Now</label>
+                    <input type="number" id="pfAmountPaid" placeholder="0" step="0.01" min="0">
+                </div>
+                <div class="sf-field">
+                    <label>Grand Total</label>
+                    <input type="text" id="pfGrandTotal" value="₹0" disabled>
+                </div>
+                <div class="sf-field full">
+                    <label>Notes</label>
+                    <input type="text" id="pfNotes" placeholder="optional">
+                </div>
+                <div class="sf-field full">
+                    <label>Bill Photo <small>(optional — snap the supplier's paper bill)</small></label>
+                    <input type="file" id="pfBillPhoto" accept="image/*">
+                </div>
+            </div>
+
+            <div id="purchaseModalError" class="gate-error"></div>
+
+            <div class="gate-buttons">
+                <button class="btn-secondary" onclick="closePurchaseForm()">Cancel</button>
+                <button class="btn-primary" id="pfSaveBtn" onclick="savePurchase()">
+                    <i class="fas fa-save"></i> Save Purchase
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== BILL PHOTO VIEWER MODAL ====== -->
+    <div id="billPhotoModal" class="analysis-gate" style="display:none;" onclick="closeBillPhoto(event)">
+        <div class="analysis-gate-card" style="max-width:90vw;max-height:92vh;padding:16px;"
+             onclick="event.stopPropagation()">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;">
+                <h3 id="billPhotoTitle" style="margin:0;">Bill Photo</h3>
+                <div style="display:flex;gap:8px;">
+                    <a id="billPhotoOpen" href="#" target="_blank" class="btn-secondary">
+                        <i class="fas fa-up-right-from-square"></i> Open
+                    </a>
+                    <button class="btn-secondary" onclick="closeBillPhoto()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+            <div style="overflow:auto;max-height:80vh;text-align:center;">
+                <img id="billPhotoImg" src="" alt="Bill photo"
+                     style="max-width:100%;height:auto;border-radius:8px;">
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== RECORD PAYMENT MODAL ====== -->
+    <div id="paymentModal" class="analysis-gate" style="display:none;">
+        <div class="analysis-gate-card supplier-modal-card">
+            <div class="gate-icon supplier-icon"><i class="fas fa-money-bill-wave"></i></div>
+            <h3 id="paymentModalTitle">Record Payment</h3>
+            <p id="paymentModalSubtitle">Log a payment made to this supplier.</p>
+
+            <div class="supplier-form-grid">
+                <div class="sf-field">
+                    <label>Amount <span class="req">*</span></label>
+                    <input type="number" id="payAmount" placeholder="0" step="0.01" min="0">
+                </div>
+                <div class="sf-field">
+                    <label>Date</label>
+                    <input type="date" id="payDate">
+                </div>
+                <div class="sf-field">
+                    <label>Mode</label>
+                    <select id="payMode">
+                        <option value="">— select —</option>
+                        <option value="Cash">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Cheque">Cheque</option>
+                    </select>
+                </div>
+                <div class="sf-field">
+                    <label>Reference</label>
+                    <input type="text" id="payReference" placeholder="txn id / cheque no (optional)">
+                </div>
+                <div class="sf-field full">
+                    <label>Notes</label>
+                    <input type="text" id="payNotes" placeholder="optional">
+                </div>
+            </div>
+
+            <div id="paymentModalError" class="gate-error"></div>
+
+            <div class="gate-buttons">
+                <button class="btn-secondary" onclick="closePaymentModal()">Cancel</button>
+                <button class="btn-primary" id="paySaveBtn" onclick="savePayment()">
+                    <i class="fas fa-save"></i> Save Payment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== NEW CREDIT NOTE MODAL ====== -->
+    <div id="creditNoteModal" class="analysis-gate" style="display:none;">
+        <div class="analysis-gate-card purchase-modal-card" style="max-width:840px;width:96%;">
+            <div class="gate-icon supplier-icon"><i class="fas fa-receipt"></i></div>
+            <h3>New Credit Note</h3>
+            <p>Log a credit from a supplier (damaged goods, returns, or a price adjustment).</p>
+
+            <div class="supplier-form-grid">
+                <div class="sf-field">
+                    <label>Supplier <span class="req">*</span></label>
+                    <select id="cnSupplier"><option value="">— select supplier —</option></select>
+                </div>
+                <div class="sf-field">
+                    <label>Date</label>
+                    <input type="date" id="cnDate">
+                </div>
+                <div class="sf-field">
+                    <label>Reason</label>
+                    <select id="cnReason">
+                        <option value="">— select —</option>
+                        <option value="Damaged">Damaged goods</option>
+                        <option value="Returned">Returned to supplier</option>
+                        <option value="Price Adjustment">Price adjustment</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="sf-field">
+                    <label>Supplier Ref #</label>
+                    <input type="text" id="cnReference" placeholder="their credit note no (optional)">
+                </div>
+            </div>
+
+            <!-- Optional line items -->
+            <div style="margin-top:14px;">
+                <div style="display:flex;align-items:center;margin-bottom:8px;gap:12px;flex-wrap:wrap;">
+                    <strong>Line items <span class="muted">(optional — scan if returning specific products)</span></strong>
+                    <label class="show-inactive" style="margin:0;">
+                        <input type="checkbox" id="cnReduceStock"> Remove these from stock
+                    </label>
+                    <div class="suppliers-search" style="flex:1;min-width:240px;">
+                        <i class="fas fa-barcode"></i>
+                        <input type="text" id="cnScan"
+                               placeholder="Scan barcode or type Product ID, then press Enter"
+                               onkeydown="scanAddCreditLine(event)" autocomplete="off">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="creditLinesTable">
+                        <thead>
+                            <tr>
+                                <th style="min-width:260px;">Product</th>
+                                <th style="width:90px;">Qty</th>
+                                <th style="width:130px;">Value / unit</th>
+                                <th class="right" style="width:120px;">Line Total</th>
+                                <th style="width:44px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="creditLinesBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="supplier-form-grid" style="margin-top:14px;">
+                <div class="sf-field">
+                    <label>Credit Amount <span class="req">*</span></label>
+                    <input type="number" id="cnAmount" placeholder="0" step="0.01" min="0">
+                    <small class="muted" id="cnAmountHint">Enter directly, or add line items to auto-calculate.</small>
+                </div>
+                <div class="sf-field full">
+                    <label>Notes</label>
+                    <input type="text" id="cnNotes" placeholder="optional">
+                </div>
+            </div>
+
+            <div id="creditNoteModalError" class="gate-error"></div>
+
+            <div class="gate-buttons">
+                <button class="btn-secondary" onclick="closeCreditNoteForm()">Cancel</button>
+                <button class="btn-primary" id="cnSaveBtn" onclick="saveCreditNote()">
+                    <i class="fas fa-save"></i> Save Credit Note
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Must load before purchases.js — it patches window.fetch with the CSRF token. -->
+    <script th:src="@{/js/auth.js}"></script>
+    <script th:src="@{/js/purchases.js}"></script>
+</body>
+</html>

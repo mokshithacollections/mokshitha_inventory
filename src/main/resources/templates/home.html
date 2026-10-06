@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mokshitha - Inventory Management System</title>
+    <!-- CSRF token — auth.js reads these and attaches the header to every
+         mutating fetch, so the existing call sites did not need changing. -->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+	<!--<link rel="stylesheet" type="text/css" href="<c:url value='/css/home.css'/>">-->
+	<link rel="stylesheet" type="text/css" th:href="@{/css/home.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/auth.css}">
+	<!-- Responsive layer — must load LAST so it can override home.css -->
+	<link rel="stylesheet" type="text/css" th:href="@{/css/responsive.css}">
+    <!-- JsBarcode for barcode generation -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+</head>
+<body>
+    <!-- ===== BRANDED LOADING SPLASH ===== -->
+    <div id="appLoader" class="app-loader">
+        <div class="loader-inner">
+            <!-- Spinning thread spool / loom ring -->
+            <div class="loom-ring">
+                <span></span><span></span><span></span><span></span>
+                <div class="loom-center">
+                    <img th:src="@{/img/mc_img.png}" alt="Mokshitha" class="loom-logo">
+                </div>
+            </div>
+
+            <div class="loader-brand">Mokshitha</div>
+            <div class="loader-sub">Collections &nbsp;•&nbsp; Textiles</div>
+
+            <!-- Woven progress bar -->
+            <div class="weave-bar"><span></span></div>
+            <div class="loader-status">Weaving your dashboard…</div>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <div class="business-title">
+                <!--<i class="fas fa-store-alt"></i>-->
+                <!--<h1>Mokshitha</h1> Mokshitha Collections-->
+				<img th:src="@{/img/mc_img.png}" style="height:70px" alt="Mokshitha Collections">
+            </div>
+            <div class="date-time" id="currentDateTime">
+                <i class="far fa-calendar-alt"></i>
+                <span id="date"></span>
+                <span>&nbsp;&nbsp;</span>
+                <i class="far fa-clock ml-2"></i>
+                <span id="time"></span>
+            </div>
+			
+			<div class="business-title">
+                <!--<i class="fas fa-store-alt"></i>-->
+                <!--<h1>Mokshitha</h1> Mokshitha Collections-->
+				<img th:src="@{/img/ms_img.png}" style="height:70px" alt="Mokshitha Collections">
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Panel - Product Management -->
+            <div class="left-panel">
+                <div class="section-header">
+                    <i class="fas fa-boxes"></i>
+                    <h2>Product Management <span>Add / Edit / Remove</span></h2>
+                </div>
+
+                <!-- Product Tabs -->
+                <div class="product-tabs">
+                    <button class="tab-btn active" onclick="switchTab('add')">
+                        <i class="fas fa-plus-circle"></i> Add Product
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('edit')">
+                        <i class="fas fa-edit"></i> Edit Product
+                    </button>
+					<button class="tab-btn" onclick="switchTab('remove')">
+                       <i class="fas fa-minus-circle"></i> Remove Product
+                   </button>
+				   <button class="tab-btn" onclick="switchTab('return')">
+                      <i class="fas fa-undo-alt"></i> Return / Exchange
+                   </button>
+                </div>
+
+                <!-- Add Product Form -->
+                <div id="addProductForm" class="product-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Product Category</label>
+                        <select id="productCategory">
+                            <option value="">Select Category</option>
+                            <option value="Sarees">Sarees</option>
+                            <option value="Dress Pieces">Dress Pieces</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-barcode"></i> Product ID</label>
+                        <div class="id-generator">
+                            <input type="text" id="productId" readonly placeholder="Select category, then click Generate">
+                            <button type="button" class="btn-generate" onclick="generateProductId()">
+                                <i class="fas fa-magic"></i> Generate
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-box"></i> Product Name</label>
+                        <input type="text" id="productName" placeholder="Product name" oninput="updateBarcodePreview()">
+                    </div>
+					<div class="form-group full-width">
+	                     <label><i class="fas fa-align-left"></i> Product Description</label>
+	                     <textarea id="productDescription" rows="1" placeholder="Brief description..."></textarea>
+	                 </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-ruler"></i> Product Size</label>
+                        <select id="productSize">
+                            <option value="">Select Size</option>
+                            <option value="Free Size">Free Size</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-palette"></i> Product Color</label>
+                        <input type="text" id="productColor" placeholder="e.g., Red, Blue" oninput="updateBarcodePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-rupee-sign"></i> Actual Price</label>
+                        <div class="price-input">
+                            <input type="number" id="actualPrice" placeholder="0" oninput="updateBarcodePreview()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tags"></i> Selling Price</label>
+                        <div class="price-input">
+                            <input type="number" id="sellingPrice" placeholder="0" oninput="updateBarcodePreview()">
+                        </div>
+                    </div>
+					<div class="form-group">
+                       <label><i class="fas fa-cubes"></i> Quantity</label>
+                       <input type="number" id="quantity" placeholder="0" min="0">
+                   </div>
+                    <div class="form-group barcode-preview-cell" id="barcodePreviewWrap" style="display:none;">
+                        <label><i class="fas fa-barcode"></i> Barcode Preview</label>
+                        <div class="barcode-preview">
+                            <div class="barcode-sticker">
+                                <div class="sticker-company" id="companyName"></div>
+                                <svg id="barcodeSvg"></svg>
+                                <div class="sticker-name" id="barcodeLabelName"></div>
+                                <div class="sticker-prices">
+                                    <span class="price-actual">Actual Price: ₹<span id="barcodeActualPrice">0</span></span>
+                                    <span class="price-selling">Selling Price: ₹<span id="barcodeSellingPrice">0</span></span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-secondary print-beside-sticker" onclick="printBarcodeFromForm()">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group form-actions add-product-cell">
+                        <button class="btn-primary pulse" onclick="addProduct()">
+                            <i class="fas fa-plus-circle"></i> Add Product
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Edit Product Form (Hidden by default) -->
+                <div id="editProductForm" class="product-form" style="display: none;">
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-barcode"></i> Scan or Search Product</label>
+                        <input type="text" id="searchProduct" placeholder="Scan barcode, or type Product ID / Name" onkeyup="searchProduct(event)" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Product Category</label>
+                        <select id="editCategory">
+                            <option value="">Select Category</option>
+                            <option value="Sarees">Sarees</option>
+                            <option value="Dress Pieces">Dress Pieces</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-box"></i> Product Name</label>
+                        <input type="text" id="editName" placeholder="Product name">
+                    </div>
+					<div class="form-group full-width">
+                        <label><i class="fas fa-align-left"></i> Product Description</label>
+                        <textarea id="editDescription" rows="1" placeholder="Brief description..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-ruler"></i> Product Size</label>
+                        <select id="editSize">
+                            <option value="">Select Size</option>
+                            <option value="Free Size">Free Size</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-palette"></i> Product Color</label>
+                        <input type="text" id="editColor" placeholder="e.g., Red, Blue">
+                    </div>
+                   
+                    <div class="form-group">
+                        <label><i class="fas fa-rupee-sign"></i> Actual Price</label>
+                        <div class="price-input">
+                            <input type="number" id="editActualPrice" placeholder="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tags"></i> Selling Price</label>
+                        <div class="price-input">
+                            <input type="number" id="editSellingPrice" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-cubes"></i> Quantity</label>
+                        <input type="number" id="editQuantity" placeholder="0" min="0">
+                    </div>
+					
+                    <div class="form-group full-width">
+                        <button class="btn-primary pulse" onclick="updateProduct()">
+                            <i class="fas fa-save"></i> Update Product
+                        </button>
+                    </div>
+                </div>
+				
+				<!-- Remove Product Form (Hidden by default) -->
+				<div id="removeProductForm"  style="display: none;">
+	               <div class="remove-section">
+	                   <div class="search-box">
+	                       <input type="text" id="removeProductId" placeholder="Scan barcode, or type Product ID / Name" onkeyup="filterRemoveMatches(event)" autocomplete="off">
+	                       <button class="btn-danger pulse" onclick="removeProduct()">
+	                           <i class="fas fa-trash"></i> Remove
+	                       </button>
+	                   </div>
+	                   <div id="removeMatchList" class="match-list"></div>
+	               </div>
+				</div>
+				
+				<!-- ============== RETURN / EXCHANGE FORM ============== -->
+                <div id="returnExchangeForm" class="return-form" style="display: none;">
+ 
+                    <!-- Step 1: Lookup -->
+                    <div class="return-step">
+                        <div class="return-step-header">
+                            <span class="step-num">1</span>
+                            <h4>Look up original bill</h4>
+                        </div>
+                        <div class="search-box return-lookup">
+                            <input type="text" id="returnBillNo"
+                                placeholder="Scan or type Bill No (e.g., MCI20260501143022)"
+                                onkeydown="if(event.key==='Enter') lookupReturnBill()" autocomplete="off">
+                            <button class="btn-primary" onclick="lookupReturnBill()">
+                                <i class="fas fa-search"></i> Find Bill
+                            </button>
+                        </div>
+                        <div id="returnLookupError" class="lookup-error"></div>
+                    </div>
+ 
+                    <!-- Step 2: Bill details + items table (revealed after successful lookup) -->
+                    <div id="returnBillDetails" class="return-step" style="display:none;">
+                        <div class="return-step-header">
+                            <span class="step-num">2</span>
+                            <h4>Select items being returned</h4>
+                            <span id="returnWindowBadge" class="window-badge"></span>
+                        </div>
+ 
+                        <!-- Bill summary card -->
+                        <div class="bill-summary-card">
+                            <div class="summary-grid">
+                                <div><span class="sk">Bill No</span><span class="sv" id="rbBillNo">—</span></div>
+                                <div><span class="sk">Date</span><span class="sv" id="rbDate">—</span></div>
+                                <div><span class="sk">Seller</span><span class="sv" id="rbSeller">—</span></div>
+                                <div><span class="sk">Buyer</span><span class="sv" id="rbBuyer">—</span></div>
+                                <div><span class="sk">Mobile</span><span class="sv" id="rbMobile">—</span></div>
+                                <div><span class="sk">Payment</span><span class="sv" id="rbPayment">—</span></div>
+                                <div><span class="sk">Total</span><span class="sv" id="rbTotal">—</span></div>
+                            </div>
+                        </div>
+ 
+                        <!-- Items table -->
+                        <div class="table-container" style="margin-top: 15px;">
+                            <table id="returnItemsTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width:40px;">Return</th>
+                                        <th>Item</th>
+                                        <th>Color</th>
+                                        <th>Price</th>
+                                        <th>Bought</th>
+                                        <th>Already Returned</th>
+                                        <th>Returnable</th>
+                                        <th style="width:80px;">Return Qty</th>
+                                        <th style="width:140px;">Reason</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="returnItemsBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+ 
+                    <!-- Step 3: Exchange items (optional) -->
+                    <div id="returnExchangeSection" class="return-step" style="display:none;">
+                        <div class="return-step-header">
+                            <span class="step-num">3</span>
+                            <h4>Exchange for new items <small>(optional)</small></h4>
+                        </div>
+ 
+                        <div class="exchange-add-row">
+                            <div class="info-item-value1">
+                                <span class="value"><i class="fas fa-barcode"></i> Scan / pick product</span>
+                                <input type="text" id="exchangeScan"
+                                    placeholder="Scan or type Product ID then press Enter"
+                                    onkeydown="exchangeScanAdd(event)" autocomplete="off">
+                            </div>
+                            <div class="info-item-value2">
+                                <span class="value">Quantity</span>
+                                <input type="number" id="exchangeQty" min="1" value="1">
+                            </div>
+                            <button class="btn-secondary" onclick="exchangeScanAdd({key:'Enter'})">
+                                <i class="fas fa-cart-plus"></i> Add
+                            </button>
+                        </div>
+ 
+                        <div class="table-container" style="margin-top: 12px;">
+                            <table id="exchangeItemsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Color</th>
+                                        <th>Price</th>
+                                        <th>Qty</th>
+                                        <th>Total</th>
+                                        <th style="width:50px;">×</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="exchangeItemsBody">
+                                    <tr class="empty-row"><td colspan="6" class="muted-cell">No exchange items added yet</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+ 
+                    <!-- Step 4: Summary + Submit -->
+                    <div id="returnSummarySection" class="return-step" style="display:none;">
+                        <div class="return-step-header">
+                            <span class="step-num">4</span>
+                            <h4>Confirm &amp; Process</h4>
+                        </div>
+ 
+                        <div class="refund-summary-card">
+                            <div class="refund-row">
+                                <span class="rk">Returned items value</span>
+                                <span class="rv" id="sumReturnValue">₹0</span>
+                            </div>
+                            <div class="refund-row">
+                                <span class="rk">Exchange items value</span>
+                                <span class="rv" id="sumExchangeValue">₹0</span>
+                            </div>
+                            <div class="refund-row refund-total" id="sumRefundRow">
+                                <span class="rk" id="sumRefundLabel">Refund to customer</span>
+                                <span class="rv" id="sumRefundValue">₹0</span>
+                            </div>
+ 
+                            <div class="refund-controls">
+                                <div class="form-group">
+                                    <label>Refund Mode</label>
+                                    <select id="returnRefundMode">
+                                        <option value="Cash">Cash</option>
+                                        <option value="UPI">UPI</option>
+                                        <option value="Store Credit">Store Credit</option>
+                                        <option value="Adjusted in New Bill">Adjusted in New Bill</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="exchangePaymentWrap" style="display:none;">
+                                    <label>New Bill Payment Mode</label>
+                                    <select id="exchangePaymentMode">
+                                        <option value="">Select Mode</option>
+                                        <option value="Cash">Cash</option>
+                                        <option value="UPI">UPI</option>
+                                        <option value="Credit Card">Credit Card</option>
+                                        <option value="Debit Card">Debit Card</option>
+                                        <option value="Cheque">Cheque</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Notes (optional)</label>
+                                    <input type="text" id="returnNotes" placeholder="Free text — appears on the return receipt">
+                                </div>
+                            </div>
+ 
+                            <div class="refund-actions">
+                                <button class="btn-secondary" onclick="resetReturnForm()">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                                <button class="btn-primary pulse" onclick="submitReturn()">
+                                    <i class="fas fa-check-circle"></i> Process Return
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ============== /RETURN / EXCHANGE FORM ============== -->
+
+               
+            </div>
+
+            <!-- Right Panel - Business Operations -->
+            <div class="right-panel">
+                <!-- Current Business Section -->
+                <div class="section-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h2>Current Business</h2>
+                </div>
+
+                <div class="business-info">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3><i class="fas fa-store"></i> Active Session</h3>
+                        <!--<span class="bill-number" id="currentBillNo">BILL-001</span>-->
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Seller</span>
+							<select id="sellerName">
+						        <option value="">Select Seller</option>
+						        <option value="Mokshitha Collections">Mokshitha Collections</option>
+						        <option value="Moksha's Studios">Moksha's Studios</option>
+						    </select>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Buyer</span>
+							<input type="text" id="buyerName">
+                        </div>
+						<div class="info-item">
+                            <span class="label">Mobile</span>
+							<input type="text" id="buyerMobile">
+                        </div>
+						
+						<div class="info-item">
+                            <span class="label">Date</span>
+                            <span class="value" id="businessDate">2024-01-15</span>
+							<span class="label">Time</span>
+							<span class="value" id="businessTime">10:30 AM</span>
+                        </div>
+						
+						<div class="info-item">
+						    <span class="label">Billing On</span>
+						    <select id="billingOn">
+						        <option value="">Select Billing</option>
+						        <option selected value="General">General</option>
+						        <option value="Offer">Offer</option>
+						    </select>
+						</div>
+
+						<div class="info-item">
+						    <span class="label">Discount (%)</span>
+						    <select id="discount" disabled>
+						        <option value="">Select Discount</option>
+						        <option value="5">5%</option>
+						        <option value="10">10%</option>
+						        <option value="15">15%</option>
+						        <option value="20">20%</option>
+						        <option value="25">25%</option>
+						        <option value="30">30%</option>
+						        <option value="35">35%</option>
+						        <option value="40">40%</option>
+						        <option value="45">45%</option>
+						        <option value="50">50%</option>
+						        <option value="55">55%</option>
+						        <option value="60">60%</option>
+						        <option value="65">65%</option>
+						        <option value="70">70%</option>
+						        <option value="75">75%</option>
+						        <option value="80">80%</option>
+						        <option value="85">85%</option>
+						        <option value="90">90%</option>
+						        <option value="95">95%</option>
+						        <option value="100">100%</option>
+						    </select>
+						</div>
+
+						<div class="info-item">
+						    <span class="label">Applied On</span>
+						    <select id="appliedOn" disabled>
+						        <option value="">Select Price</option>
+						        <option value="Actual Price">Actual Price</option>
+						        <option value="Selling Price">Selling Price</option>
+						    </select>
+						</div>
+
+						<div class="info-item">
+                            <span class="label">Payment</span>
+							<select id="paymentMode">
+	                            <option value="">Select Mode</option>
+	                            <option value="Cash">Cash</option>
+								<option value="UPI">UPI</option>
+								<option value="Credit Card">Credit Card</option>
+								<option value="Dabit Card">Dabit Card</option>
+								<option value="Check">Cheque</option>
+	                        </select>
+                        </div>
+						
+						
+                    </div>
+
+                    <!-- Bill Generation -->
+                    <div class="bill-section">
+                        <div class="bill-header">
+                            <h4><i class="fas fa-file-invoice"></i> Generate Bill</h4>
+                        </div>
+
+                   <!-- <div class="selling-item" style="margin-bottom:10px;">
+                            <div class="info-item-value1" style="flex:1;">
+                                <span class="value" style="padding-top:10px"><i class="fas fa-barcode"></i> Scan Barcode </span>
+                                <input type="text" id="scanToBill" placeholder="Scan or type Product ID then press Enter" onkeydown="scanAddToBill(event)" autocomplete="off">
+                            </div>
+                        </div>-->
+                        
+                        <div class="selling-item">
+							<div class="info-item-value1" style="display:none">
+								<span class="value" style="padding-top:10px">Select Product For Bill </span>
+	                            <select id="selectProduct">
+	                                <option value="">Select Product</option>
+	                            </select>
+							</div>
+							<div class="info-item-value1">
+                                <span class="value" style="padding-top:10px"><i class="fas fa-barcode"></i> Scan Barcode </span>
+                                <input type="text" id="scanToBill" placeholder="Scan or type Product ID then press Enter" onkeydown="scanAddToBill(event)" autocomplete="off">
+                            </div>
+							<div class="info-item-value2">
+								<span class="value" style="padding-top:10px">Select Product Quantity </span>
+	                            <input type="number" id="productQuantity" placeholder="Qty" min="1" value="1">
+							</div>
+                        </div>
+
+                        <!-- Current Bill Items -->
+                        <div class="table-container" style="margin-top: 15px;">
+                            <table id="billTable">
+                                <thead>
+                                    <tr>
+										<th>Bill Type</th>
+                                        <th>Product</th>
+                                        <th>Color</th>
+										<th>Discount</th>
+										<th>Applied On</th>
+                                        <th>Price</th>
+										<th>Quantity</th>
+                                        <th>Total</th>
+										<th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="billBody">
+                                    <!-- Bill items will be added here -->
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="7" style="text-align: right;"><strong>Total:</strong></td>
+                                        <td><strong id="billTotal">₹0</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                         <div style="display: flex; justify-content: flex-end; gap: 10px; margin: 15px 0 0 0;">
+                            <!--<button class="btn-secondary" onclick="addToBill()">
+                                <i class="fas fa-cart-plus"></i> Add to Bill
+                            </button>-->
+                            <button class="btn-primary" onclick="generateBill()">
+                                <i class="fas fa-file-invoice"></i> Generate Bill
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Past Business Section -->
+                <div class="past-business">
+                    <div class="section-header">
+                        <i class="fas fa-history"></i>
+                        <h2>Past Business</h2>
+                    </div>
+
+                    <div class="date-filters">
+                        <button class="filter-btn active" onclick="filterBusiness('week', event)">
+                            <i class="fas fa-calendar-week"></i> Last 7 Days
+                        </button>
+                        <button class="filter-btn" onclick="filterBusiness('month', event)">
+                            <i class="fas fa-calendar-alt"></i> This Month
+                        </button>
+                        <button class="filter-btn" onclick="filterBusiness('all', event)">
+                            <i class="fas fa-globe"></i> All
+                        </button>
+                    </div>
+
+                    <div class="range-finder">
+                        <input type="date" id="startDate" placeholder="Start Date">
+                        <input type="date" id="endDate" placeholder="End Date">
+                        <button class="btn-secondary" onclick="applyDateRange()">
+                            <i class="fas fa-search"></i> Apply
+                        </button>
+                    </div>
+
+                    <div class="table-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="pastBusinessSearch" placeholder="Search by Bill No, Seller or Payment Mode..." onkeyup="filterPastBusinessTable()">
+                    </div>
+
+                    <!-- Past Business Table -->
+                    <div class="table-container" style="margin-top: 15px;">
+                        <table id="pastBusinessTable">
+                            <thead>
+                                <tr>
+                                    <th>Bill No.</th>
+                                    <th>Date</th>
+									<th>Time</th>
+									<th>Seller</th>
+									<th>Buyer</th>
+                                    <th>Total Amount</th>
+									<th>Payment Mode</th>
+                                    <th>View</th>
+									<th>Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pastBusinessBody">
+                                <!-- Past business data will be populated here -->
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: #999;">
+                                        <i class="fas fa-inbox"></i> No past business records
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-controls" id="pastBusinessPagination">
+                        <span class="pagination-info" id="pastBusinessInfo"></span>
+                        <div class="pagination-buttons">
+                            <button class="page-btn view-more" id="pastViewMoreBtn" onclick="pastBusinessPager.more()">
+                                <i class="fas fa-angle-down"></i> View More
+                            </button>
+                            <button class="page-btn show-less" id="pastShowLessBtn" onclick="pastBusinessPager.less()">
+                                <i class="fas fa-angle-up"></i> Show Less
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Export Section -->
+                    <div class="export-section">
+						<button class="export-btn analysis-btn" onclick="openAnalysisGate()">
+                            <i class="fas fa-chart-line"></i> Analysis
+                        </button>
+
+						<button class="export-btn analysis-btn" onclick="openPurchasesGate()">
+                            <i class="fas fa-truck"></i> Purchases
+                        </button>
+												
+                        <button class="export-btn" onclick="exportData('excel')">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                       <!-- <button class="export-btn" onclick="exportData('pdf')">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button class="export-btn" onclick="exportData('print')">
+                            <i class="fas fa-print"></i> Print
+                        </button>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+		<div class= "main-below">
+			<div class="below-panel">
+				<!-- Products Table -->
+	            <div style="margin-top: 25px;">
+	                <h3><i class="fas fa-list"></i> Current Inventory</h3><br>
+	                <div class="table-search">
+	                    <i class="fas fa-search"></i>
+	                    <input type="text" id="inventorySearch" placeholder="Search by Product ID, Name, Category or Color..." onkeyup="filterInventoryTable()">
+	                </div>
+	                <div class="table-container">
+	                    <table id="inventoryTable">
+							<thead>
+						        <tr>
+						            <th>ID</th>
+						            <th>Name</th>
+						            <th>Category</th>
+						            <th>Size</th>
+						            <th>Color</th>
+						            <th>Actual Price</th>
+						            <th>Selling Price</th>
+						            <th>Quantity</th>
+						            <th>Barcode</th>
+						        </tr>
+						    </thead>
+							<tbody id="inventoryTableBody">
+							</tbody>
+	                    </table>
+	                </div>
+	                <div class="pagination-controls" id="inventoryPagination">
+	                    <span class="pagination-info" id="inventoryInfo"></span>
+	                    <div class="pagination-buttons">
+	                        <button class="page-btn view-more" id="invViewMoreBtn" onclick="inventoryPager.more()">
+	                            <i class="fas fa-angle-down"></i> View More
+	                        </button>
+	                        <button class="page-btn show-less" id="invShowLessBtn" onclick="inventoryPager.less()">
+	                            <i class="fas fa-angle-up"></i> Show Less
+	                        </button>
+	                    </div>
+	                </div>
+	            </div>
+			</div>
+		</div>
+
+		<!-- ============== ACCOUNT BAR (signed-in user) ============== -->
+		<div class="account-bar">
+			<div class="account-who">
+				<div class="account-avatar"><i class="fas fa-user"></i></div>
+				<div class="account-text">
+					<div class="account-name" id="acctName">Signed in</div>
+					<div class="account-email" id="acctEmail">&nbsp;</div>
+					<div class="account-last" id="acctLastLogin">&nbsp;</div>
+				</div>
+			</div>
+			<div class="account-actions">
+				<button type="button" class="account-btn" onclick="openChangePassword()">
+					<i class="fas fa-key"></i> Change Password
+				</button>
+				<button type="button" class="account-btn logout" onclick="doLogout()">
+					<i class="fas fa-right-from-bracket"></i> Logout
+				</button>
+			</div>
+			<!-- Real POST form so the CSRF token is submitted; a plain link
+			     cannot sign you out. -->
+			<form id="logoutForm" method="post" action="/logout" th:action="@{/logout}" style="display:none;">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+			</form>
+		</div>
+    </div>
+
+	   <!-- ============== PURCHASES SECTION ============== -->
+	   <!--<div class="purchases-section">
+	       <div class="section-header purchases-header">
+	           <i class="fas fa-truck"></i>
+	           <h2>Purchases <span>Suppliers · Invoices · Credit Notes · Ledger</span></h2>
+	       </div>-->
+
+	       <!-- Sub-tabs inside Purchases -->
+	      <!-- <div class="purchase-tabs">
+	           <button class="purchase-tab-btn active" onclick="switchPurchaseTab('suppliers')">
+	               <i class="fas fa-handshake"></i> Suppliers
+	           </button>
+	           <button class="purchase-tab-btn" onclick="switchPurchaseTab('invoices')" disabled
+	                   title="Coming in Phase 2">
+	               <i class="fas fa-file-invoice"></i> Purchase Invoices
+	           </button>
+	           <button class="purchase-tab-btn" onclick="switchPurchaseTab('credit-notes')" disabled
+	                   title="Coming in Phase 3">
+	               <i class="fas fa-receipt"></i> Credit Notes
+	           </button>
+	           <button class="purchase-tab-btn" onclick="switchPurchaseTab('ledger')" disabled
+	                   title="Coming in Phase 3">
+	               <i class="fas fa-book"></i> Supplier Ledger
+	           </button>
+	       </div>-->
+
+	       <!-- ===== Suppliers tab content ===== -->
+	       <!--<div id="suppliersTab" class="purchase-tab-content">
+
+	           <div class="suppliers-toolbar">
+	               <div class="suppliers-search">
+	                   <i class="fas fa-search"></i>
+	                   <input type="text" id="supplierSearch"
+	                          placeholder="Search by supplier name..."
+	                          oninput="filterSuppliers()">
+	               </div>
+	               <label class="show-inactive">
+	                   <input type="checkbox" id="showInactiveSuppliers" onchange="loadSuppliers()">
+	                   Show inactive
+	               </label>
+	               <button class="btn-primary" onclick="openSupplierForm()">
+	                   <i class="fas fa-plus"></i> Add Supplier
+	               </button>
+	           </div>-->
+
+	           <!-- Suppliers table -->
+	           <!--<div class="table-container">
+	               <table id="suppliersTable">
+	                   <thead>
+	                       <tr>
+	                           <th>ID</th>
+	                           <th>Name</th>
+	                           <th>Contact Person</th>
+	                           <th>Phone</th>
+	                           <th>GST</th>
+	                           <th>Payment Terms</th>
+	                           <th class="right">Balance</th>
+	                           <th>Status</th>
+	                           <th>Actions</th>
+	                       </tr>
+	                   </thead>
+	                   <tbody id="suppliersTableBody">
+	                       <tr class="empty-row"><td colspan="9" class="muted-cell">Loading suppliers…</td></tr>
+	                   </tbody>
+	               </table>
+	           </div>
+	       </div>-->
+
+	       <!-- Placeholder tabs for future phases -->
+	       <!--<div id="invoicesTab" class="purchase-tab-content" style="display:none;">
+	           <div class="phase-placeholder">
+	               <i class="fas fa-hourglass-half"></i>
+	               <h3>Purchase Invoices</h3>
+	               <p>Coming in Phase 2 — record supplier purchases and automatically update stock.</p>
+	           </div>
+	       </div>
+	       <div id="creditNotesTab" class="purchase-tab-content" style="display:none;">
+	           <div class="phase-placeholder">
+	               <i class="fas fa-hourglass-half"></i>
+	               <h3>Credit Notes</h3>
+	               <p>Coming in Phase 3 — log credits from suppliers for damaged or returned goods.</p>
+	           </div>
+	       </div>
+	       <div id="ledgerTab" class="purchase-tab-content" style="display:none;">
+	           <div class="phase-placeholder">
+	               <i class="fas fa-hourglass-half"></i>
+	               <h3>Supplier Ledger</h3>
+	               <p>Coming in Phase 3 — full running statement per supplier.</p>
+	           </div>
+	       </div>
+	   </div>-->
+
+	   <!-- ============== SUPPLIER FORM MODAL ============== -->
+	   <!--<div id="supplierModal" class="analysis-gate" style="display:none;">
+	       <div class="analysis-gate-card supplier-modal-card">
+	           <div class="gate-icon supplier-icon"><i class="fas fa-handshake"></i></div>
+	           <h3 id="supplierModalTitle">Add Supplier</h3>
+	           <p id="supplierModalSubtitle">Enter supplier details. ID will be auto-generated.</p>
+
+	           <div class="supplier-form-grid">
+	               <div class="sf-field">
+	                   <label>Supplier Name <span class="req">*</span></label>
+	                   <input type="text" id="sfName" placeholder="e.g., Kanchipuram Silks Pvt Ltd">
+	               </div>
+	               <div class="sf-field">
+	                   <label>Contact Person</label>
+	                   <input type="text" id="sfContactPerson" placeholder="e.g., Mr. Raghavan">
+	               </div>
+	               <div class="sf-field">
+	                   <label>Phone</label>
+	                   <input type="tel" id="sfPhone" placeholder="10-digit mobile" maxlength="15">
+	               </div>
+	               <div class="sf-field">
+	                   <label>Email</label>
+	                   <input type="email" id="sfEmail" placeholder="optional">
+	               </div>
+	               <div class="sf-field full">
+	                   <label>Address</label>
+	                   <input type="text" id="sfAddress" placeholder="optional">
+	               </div>
+	               <div class="sf-field">
+	                   <label>GST Number</label>
+	                   <input type="text" id="sfGstNumber" placeholder="optional">
+	               </div>
+	               <div class="sf-field">
+	                   <label>Payment Terms</label>
+	                   <select id="sfPaymentTerms">
+	                       <option value="">— select —</option>
+	                       <option value="Cash on Delivery">Cash on Delivery</option>
+	                       <option value="Net 7">Net 7 days</option>
+	                       <option value="Net 15">Net 15 days</option>
+	                       <option value="Net 30">Net 30 days</option>
+	                       <option value="Net 60">Net 60 days</option>
+	                       <option value="Advance 50%">Advance 50%</option>
+	                       <option value="Advance 100%">Advance 100%</option>
+	                       <option value="Other">Other</option>
+	                   </select>
+	               </div>
+	               <div class="sf-field">
+	                   <label>Opening Balance <small>(only at creation)</small></label>
+	                   <input type="number" id="sfOpeningBalance" placeholder="0" step="0.01" min="0">
+	               </div>
+	               <div class="sf-field full">
+	                   <label>Notes</label>
+	                   <input type="text" id="sfNotes" placeholder="optional">
+	               </div>
+	           </div>
+
+	           <div id="supplierModalError" class="gate-error"></div>
+
+	           <div class="gate-buttons">
+	               <button class="btn-secondary" onclick="closeSupplierForm()">Cancel</button>
+	               <button class="btn-primary" id="sfSaveBtn" onclick="saveSupplier()">
+	                   <i class="fas fa-save"></i> Save
+	               </button>
+	           </div>
+	       </div>
+	   </div>-->
+	   <!-- ============== /PURCHASES SECTION ============== -->
+	
+	<!-- Admin Password Modal (for Analysis access) -->
+   <div id="analysisGate" class="analysis-gate" style="display:none;">
+       <div class="analysis-gate-card">
+           <div class="gate-icon"><i class="fas fa-lock"></i></div>
+           <h3>Admin Access Required</h3>
+           <p>Enter the admin password to view sales analytics.</p>
+           <input type="password" id="analysisPassword" placeholder="Password" autocomplete="off"
+                  onkeydown="if(event.key==='Enter') submitAnalysisPassword()">
+           <div id="analysisGateError" class="gate-error"></div>
+           <div class="gate-buttons">
+               <button class="btn-secondary" onclick="closeAnalysisGate()">Cancel</button>
+               <button class="btn-primary" onclick="submitAnalysisPassword()">
+                   <i class="fas fa-unlock"></i> Unlock
+               </button>
+           </div>
+       </div>
+   </div>
+
+	<!-- Admin Password Modal (for Purchases access) -->
+   <div id="purchasesGate" class="analysis-gate" style="display:none;">
+       <div class="analysis-gate-card">
+           <div class="gate-icon"><i class="fas fa-lock"></i></div>
+           <h3>Admin Access Required</h3>
+           <p>Enter the admin password to manage purchases &amp; suppliers.</p>
+           <input type="password" id="purchasesPassword" placeholder="Password" autocomplete="off"
+                  onkeydown="if(event.key==='Enter') submitPurchasesPassword()">
+           <div id="purchasesGateError" class="gate-error"></div>
+           <div class="gate-buttons">
+               <button class="btn-secondary" onclick="closePurchasesGate()">Cancel</button>
+               <button class="btn-primary" onclick="submitPurchasesPassword()">
+                   <i class="fas fa-unlock"></i> Unlock
+               </button>
+           </div>
+       </div>
+   </div>
+   
+   <!-- Admin Override Modal (for late returns > 7 days) -->
+   <div id="overrideGate" class="analysis-gate" style="display:none;">
+       <div class="analysis-gate-card">
+           <div class="gate-icon override-icon"><i class="fas fa-exclamation-triangle"></i></div>
+           <h3>Admin Override Required</h3>
+           <p id="overrideGateMessage">This bill is past the 7-day return window. Enter the admin password to authorise the return.</p>
+           <input type="password" id="overridePassword" placeholder="Admin password" autocomplete="off"
+                  onkeydown="if(event.key==='Enter') submitOverride()">
+           <div id="overrideGateError" class="gate-error"></div>
+           <div class="gate-buttons">
+               <button class="btn-secondary" onclick="closeOverrideModal()">Cancel</button>
+               <button class="btn-primary" onclick="submitOverride()">
+                   <i class="fas fa-key"></i> Authorise Override
+               </button>
+           </div>
+       </div>
+   </div>
+	
+   <!-- ============== CHANGE PASSWORD DIALOG ============== -->
+   <div id="changePasswordModal" class="analysis-gate" style="display:none;">
+       <div class="analysis-gate-card cp-card">
+           <div class="gate-icon cp-icon"><i class="fas fa-key"></i></div>
+           <h3>Change Password</h3>
+           <p>You'll be signed out afterwards.</p>
+
+           <div class="cp-field">
+               <label for="cpCurrent">Current password</label>
+               <input type="password" id="cpCurrent" autocomplete="current-password" placeholder="Your current password">
+           </div>
+           <div class="cp-field">
+               <label for="cpNew">New password</label>
+               <input type="password" id="cpNew" autocomplete="new-password" placeholder="At least 10 characters">
+           </div>
+           <div class="cp-field">
+               <label for="cpConfirm">Confirm new password</label>
+               <input type="password" id="cpConfirm" autocomplete="new-password" placeholder="Type it again">
+           </div>
+           <div id="cpMessage" class="cp-message"></div>
+
+           <div class="gate-buttons">
+               <button class="btn-secondary" onclick="closeChangePassword()">Cancel</button>
+               <button class="btn-primary" id="cpSaveBtn" onclick="submitChangePassword()">
+                   <i class="fas fa-save"></i> Update Password
+               </button>
+           </div>
+       </div>
+   </div>
+
+	<!-- auth.js must load BEFORE home.js: it patches window.fetch so that
+	     every request home.js makes already carries the CSRF token. -->
+	<script th:src="@{/js/auth.js}"></script>
+	<script th:src="@{/js/home.js}"></script>
+
+</body>
+</html>

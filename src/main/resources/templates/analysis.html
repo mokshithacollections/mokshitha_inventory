@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Analytics — Mokshitha</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js for all the visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+        /* ============================================================
+           Mokshitha Sales Analytics — boutique-modern dashboard
+           ============================================================ */
+        :root {
+            --bg:           #f3f5fa;
+            --card:         #ffffff;
+            --ink:          #1f2937;
+            --ink-soft:     #4b5563;
+            --ink-muted:    #9ca3af;
+            --line:         #e5e7eb;
+            --primary:      #6c5ce7;
+            --primary-soft: #8e7cf3;
+            --teal:         #20B2AA;
+            --teal-soft:    #2ac2ba;
+            --green:        #10b981;
+            --amber:        #f59e0b;
+            --red:          #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        /* ============== HEADER ============== */
+        .page-header {
+            max-width: 1500px;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .page-header .title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .page-header .title-icon {
+            width: 50px; height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-soft) 100%);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
+        }
+        .page-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.1;
+        }
+        .page-header .subtitle {
+            font-size: 13px;
+            color: var(--ink-muted);
+            margin-top: 2px;
+        }
+        .back-btn {
+            background: white;
+            color: var(--ink-soft);
+            border: 1px solid var(--line);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateX(-2px);
+        }
+
+        /* ============== FILTER BAR ============== */
+        .filter-bar {
+            max-width: 1500px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 16px;
+            padding: 18px 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-group .filter-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-right: 4px;
+        }
+        .chip {
+            padding: 7px 14px;
+            background: #f3f4f6;
+            border: 1px solid transparent;
+            color: var(--ink-soft);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .chip:hover { background: #e5e7eb; }
+        .chip.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-soft) 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(108, 92, 231, 0.3);
+        }
+        .chip.business {
+            font-weight: 600;
+        }
+        .chip.business.active {
+            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-soft) 100%);
+            box-shadow: 0 3px 10px rgba(32, 178, 170, 0.3);
+        }
+        .filter-group input[type="date"] {
+            padding: 6px 10px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+        }
+        .apply-range {
+            background: var(--ink);
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* ============== KPI CARDS ============== */
+        .kpi-row {
+            max-width: 1500px;
+            margin: 0 auto 22px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+        .kpi {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .kpi:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.07);
+        }
+        .kpi::before {
+            content: "";
+            position: absolute;
+            top: 0; right: 0;
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            opacity: 0.08;
+            transform: translate(20%, -30%);
+        }
+        .kpi.revenue::before  { background: var(--teal); }
+        .kpi.profit::before   { background: var(--green); }
+        .kpi.bills::before    { background: var(--primary); }
+        .kpi.items::before    { background: var(--amber); }
+        .kpi.returns::before  { background: var(--red); }
+
+        .kpi .kpi-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .kpi .kpi-label i {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px;
+        }
+        .kpi.revenue .kpi-label i { background: rgba(32, 178, 170, 0.15);  color: var(--teal); }
+        .kpi.profit  .kpi-label i { background: rgba(16, 185, 129, 0.15);  color: var(--green); }
+        .kpi.bills   .kpi-label i { background: rgba(108, 92, 231, 0.15);  color: var(--primary); }
+        .kpi.items   .kpi-label i { background: rgba(245, 158, 11, 0.15);  color: var(--amber); }
+        .kpi.returns .kpi-label i { background: rgba(239, 68, 68, 0.15);   color: var(--red); }
+
+        .kpi .kpi-value {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.1;
+            margin: 8px 0 4px;
+            letter-spacing: -0.5px;
+        }
+        .kpi .kpi-sub {
+            font-size: 12px;
+            color: var(--ink-muted);
+            font-weight: 500;
+        }
+        .kpi .kpi-sub.up    { color: var(--green); }
+        .kpi .kpi-sub.down  { color: var(--red); }
+
+        /* ============== CHART GRID ============== */
+        .charts-grid {
+            max-width: 1500px;
+            margin: 0 auto 22px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+        .chart-card.full { grid-column: 1 / -1; }
+        .chart-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chart-card h3 i {
+            color: var(--primary);
+            font-size: 14px;
+        }
+        .chart-card .chart-sub {
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-bottom: 14px;
+        }
+        .chart-canvas-wrap {
+            position: relative;
+            height: 280px;
+        }
+        .chart-canvas-wrap.tall { height: 340px; }
+
+        /* ============== TABLES ============== */
+        .tables-grid {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+        .table-card.full { grid-column: 1 / -1; }
+        .table-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .table-card h3 i { color: var(--primary); font-size: 14px; }
+        .table-card table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .table-card thead th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 8px 10px;
+            border-bottom: 1.5px solid var(--line);
+        }
+        .table-card thead th.right { text-align: right; }
+        .table-card tbody td {
+            padding: 10px;
+            border-bottom: 1px solid var(--line);
+            color: var(--ink);
+        }
+        .table-card tbody td.right { text-align: right; font-variant-numeric: tabular-nums; }
+        .table-card tbody td.muted { color: var(--ink-muted); }
+        .table-card tbody tr:last-child td { border-bottom: none; }
+        .table-card tbody tr:hover { background: #fafbfc; }
+        .table-card .empty-row td {
+            text-align: center;
+            color: var(--ink-muted);
+            font-style: italic;
+            padding: 24px 10px;
+        }
+
+        .rank-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            color: var(--ink-soft);
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .rank-pill.top1 { background: linear-gradient(135deg, #fde68a, #fbbf24); color: #78350f; }
+        .rank-pill.top2 { background: linear-gradient(135deg, #e5e7eb, #cbd5e1); color: #1f2937; }
+        .rank-pill.top3 { background: linear-gradient(135deg, #fed7aa, #fb923c); color: #7c2d12; }
+
+        .badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge.sarees      { background: rgba(32, 178, 170, 0.15); color: var(--teal); }
+        .badge.dress       { background: rgba(108, 92, 231, 0.15); color: var(--primary); }
+
+        /* ============== EMPTY/LOADING STATES ============== */
+        .empty-state, .loading-state {
+            text-align: center;
+            color: var(--ink-muted);
+            padding: 50px 20px;
+        }
+        .empty-state i, .loading-state i {
+            font-size: 38px;
+            margin-bottom: 12px;
+            color: var(--ink-muted);
+            opacity: 0.5;
+        }
+
+        /* ============== RESPONSIVE ============== */
+        @media (max-width: 1400px) {
+            .kpi-row    { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 1100px) {
+            .kpi-row    { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid, .tables-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            body { padding: 14px; }
+            .kpi-row { grid-template-columns: 1fr; }
+            .filter-bar { padding: 14px; }
+        }
+    </style>
+
+    <!-- Responsive layer — must load LAST so it can override the rules above. -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/responsive.css}">
+</head>
+<body>
+
+    <!-- ===== BRANDED LOADING SPLASH ===== -->
+    <style>
+        .app-loader {
+            position: fixed; inset: 0; z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(1200px 600px at 50% -10%, #ffffff 0%, #fbf7f2 45%, #f6ede6 100%);
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        .app-loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loader-inner { display: flex; flex-direction: column; align-items: center; text-align: center;
+            animation: loaderFadeUp 0.7s ease both; }
+        .loom-ring { position: relative; width: 132px; height: 132px; margin-bottom: 26px; }
+        .loom-ring > span { position: absolute; inset: 0; border-radius: 50%; border: 2px solid transparent;
+            animation: loomSpin 2.4s linear infinite; }
+        .loom-ring > span:nth-child(1) { border-top-color: #C59B45;  animation-duration: 2.2s; }
+        .loom-ring > span:nth-child(2) { border-right-color: #0e7a5f; animation-duration: 3.0s; }
+        .loom-ring > span:nth-child(3) { border-bottom-color: #b0567a; animation-duration: 3.6s; }
+        .loom-ring > span:nth-child(4) { inset: 14px; border: 1px dashed rgba(197,155,69,0.5);
+            animation: loomSpin 6s linear infinite reverse; }
+        .loom-center { position: absolute; inset: 26px; border-radius: 50%; background: #fff;
+            box-shadow: 0 10px 26px rgba(120,80,40,0.18), inset 0 0 0 1px rgba(197,155,69,0.25);
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            animation: loomPulse 2.4s ease-in-out infinite; }
+        .loom-logo { width: 76%; height: 76%; object-fit: contain; }
+        .loader-brand { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 46px; font-weight: 700;
+            letter-spacing: 1px; line-height: 1;
+            background: linear-gradient(100deg, #8a6a1f 0%, #C59B45 25%, #f4e6bf 50%, #C59B45 75%, #8a6a1f 100%);
+            background-size: 220% auto; -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent; color: transparent; animation: shimmer 3s linear infinite; }
+        .loader-sub { margin-top: 8px; font-size: 12.5px; font-weight: 500; letter-spacing: 4px;
+            text-transform: uppercase; color: #0e7a5f; }
+        .weave-bar { position: relative; width: 230px; height: 6px; margin-top: 26px; border-radius: 6px;
+            overflow: hidden; background-color: #efe4d6;
+            background-image: repeating-linear-gradient(45deg, rgba(197,155,69,0.22) 0 5px, transparent 5px 10px),
+                              repeating-linear-gradient(-45deg, rgba(14,122,95,0.18) 0 5px, transparent 5px 10px); }
+        .weave-bar > span { position: absolute; top: 0; left: 0; bottom: 0; width: 40%; border-radius: 6px;
+            background: linear-gradient(90deg, #C59B45, #0e7a5f); animation: weaveSlide 1.5s ease-in-out infinite; }
+        .loader-status { margin-top: 14px; font-size: 12px; letter-spacing: 1px; color: #9a8c78; }
+        @keyframes loomSpin  { to { transform: rotate(360deg); } }
+        @keyframes loomPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(0.93); } }
+        @keyframes shimmer   { to { background-position: 220% center; } }
+        @keyframes weaveSlide { 0% { left: -40%; } 50% { left: 60%; } 100% { left: 100%; } }
+        @keyframes loaderFadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        @media (prefers-reduced-motion: reduce) {
+            .loom-ring > span, .loom-center, .loader-brand, .weave-bar > span { animation: none; }
+        }
+    </style>
+    <div id="appLoader" class="app-loader">
+        <div class="loader-inner">
+            <div class="loom-ring">
+                <span></span><span></span><span></span><span></span>
+                <div class="loom-center">
+                    <img th:src="@{/img/mc_img.png}" alt="Mokshitha" class="loom-logo">
+                </div>
+            </div>
+            <div class="loader-brand">Mokshitha</div>
+            <div class="loader-sub">Sales Analytics</div>
+            <div class="weave-bar"><span></span></div>
+            <div class="loader-status">Crunching your numbers…</div>
+        </div>
+    </div>
+
+    <!-- ====== HEADER ====== -->
+    <div class="page-header">
+        <div class="title">
+            <div class="title-icon"><i class="fas fa-chart-line"></i></div>
+            <div>
+                <h1>Sales Analytics</h1>
+                <div class="subtitle">Mokshitha Collections &amp; Moksha's Studio</div>
+            </div>
+        </div>
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- ====== FILTER BAR ====== -->
+    <div class="filter-bar">
+        <div class="filter-group">
+            <span class="filter-label">Business</span>
+            <button class="chip business active" data-biz="both">Both</button>
+            <button class="chip business" data-biz="Sarees">Sarees</button>
+            <button class="chip business" data-biz="DressPieces">Dress Pieces</button>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Period</span>
+            <button class="chip period" data-period="today">Today</button>
+            <button class="chip period" data-period="week">7 Days</button>
+            <button class="chip period active" data-period="month">This Month</button>
+            <button class="chip period" data-period="year">This Year</button>
+            <button class="chip period" data-period="all">All Time</button>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Custom</span>
+            <input type="date" id="customStart">
+            <span style="color: var(--ink-muted); font-size: 12px;">to</span>
+            <input type="date" id="customEnd">
+            <button class="apply-range" onclick="applyCustomRange()">Apply</button>
+        </div>
+    </div>
+
+    <!-- ====== KPI CARDS ====== -->
+    <div class="kpi-row">
+        <div class="kpi revenue">
+            <div class="kpi-label"><i class="fas fa-coins"></i> Revenue</div>
+            <div class="kpi-value" id="kpiRevenue">₹0</div>
+            <div class="kpi-sub" id="kpiRevenueSub">—</div>
+        </div>
+        <div class="kpi profit">
+            <div class="kpi-label"><i class="fas fa-chart-pie"></i> Profit</div>
+            <div class="kpi-value" id="kpiProfit">₹0</div>
+            <div class="kpi-sub" id="kpiProfitSub">—</div>
+        </div>
+        <div class="kpi bills">
+            <div class="kpi-label"><i class="fas fa-receipt"></i> Bills</div>
+            <div class="kpi-value" id="kpiBills">0</div>
+            <div class="kpi-sub" id="kpiBillsSub">—</div>
+        </div>
+        <div class="kpi items">
+            <div class="kpi-label"><i class="fas fa-box"></i> Items Sold</div>
+            <div class="kpi-value" id="kpiItems">0</div>
+            <div class="kpi-sub" id="kpiItemsSub">—</div>
+        </div>
+        <div class="kpi returns">
+            <div class="kpi-label"><i class="fas fa-undo-alt"></i> Return Rate</div>
+            <div class="kpi-value" id="kpiReturnRate">0.0%</div>
+            <div class="kpi-sub" id="kpiReturnRateSub">—</div>
+        </div>
+    </div>
+
+    <!-- ====== CHARTS ====== -->
+    <div class="charts-grid">
+        <div class="chart-card full">
+            <h3><i class="fas fa-chart-area"></i> Revenue Trend</h3>
+            <div class="chart-sub">Daily revenue over the selected period</div>
+            <div class="chart-canvas-wrap tall"><canvas id="chartTrend"></canvas></div>
+        </div>
+
+        <div class="chart-card">
+            <h3><i class="fas fa-trophy"></i> Top 10 Products</h3>
+            <div class="chart-sub">By revenue contribution</div>
+            <div class="chart-canvas-wrap tall"><canvas id="chartTopProducts"></canvas></div>
+        </div>
+
+        <div class="chart-card">
+            <h3><i class="fas fa-tags"></i> Sales by Category</h3>
+            <div class="chart-sub">Sarees vs Dress Pieces</div>
+            <div class="chart-canvas-wrap"><canvas id="chartCategory"></canvas></div>
+        </div>
+
+        <div class="chart-card">
+            <h3><i class="fas fa-store"></i> Sales by Seller</h3>
+            <div class="chart-sub">Revenue per business</div>
+            <div class="chart-canvas-wrap"><canvas id="chartSeller"></canvas></div>
+        </div>
+
+        <div class="chart-card">
+            <h3><i class="fas fa-credit-card"></i> Payment Modes</h3>
+            <div class="chart-sub">How customers paid</div>
+            <div class="chart-canvas-wrap"><canvas id="chartPayment"></canvas></div>
+        </div>
+
+        <div class="chart-card">
+            <h3><i class="fas fa-undo-alt"></i> Return Reasons</h3>
+            <div class="chart-sub">Why customers returned items</div>
+            <div class="chart-canvas-wrap"><canvas id="chartReturnReasons"></canvas></div>
+        </div>
+
+        <div class="chart-card full">
+            <h3><i class="fas fa-calendar-week"></i> Best Days of Week</h3>
+            <div class="chart-sub">Average revenue per weekday across the selected period</div>
+            <div class="chart-canvas-wrap"><canvas id="chartWeekday"></canvas></div>
+        </div>
+    </div>
+
+    <!-- ====== TABLES ====== -->
+    <div class="tables-grid">
+        <div class="table-card">
+            <h3><i class="fas fa-medal"></i> Top 10 Best-Sellers</h3>
+            <div class="tc-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:40px;">#</th>
+                        <th>Product</th>
+                        <th>Cat.</th>
+                        <th class="right">Qty</th>
+                        <th class="right">Revenue</th>
+                        <th class="right">Profit</th>
+                    </tr>
+                </thead>
+                <tbody id="topSellersBody">
+                    <tr class="empty-row"><td colspan="6">Loading…</td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <h3><i class="fas fa-snowflake"></i> Slowest Movers</h3>
+            <div class="tc-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Cat.</th>
+                        <th class="right">Stock</th>
+                        <th class="right">Sold</th>
+                    </tr>
+                </thead>
+                <tbody id="slowMoversBody">
+                    <tr class="empty-row"><td colspan="4">Loading…</td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <div class="table-card full">
+            <h3><i class="fas fa-list"></i> Daily Sales Log</h3>
+            <div class="tc-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th class="right">Bills</th>
+                        <th class="right">Items</th>
+                        <th class="right">Revenue</th>
+                        <th class="right">Profit</th>
+                        <th class="right">Avg Bill</th>
+                    </tr>
+                </thead>
+                <tbody id="dailyLogBody">
+                    <tr class="empty-row"><td colspan="6">Loading…</td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Must load before analysis.js — it patches window.fetch (CSRF + 401 handling). -->
+    <script th:src="@{/js/auth.js}"></script>
+    <script th:src="@{/js/analysis.js}"></script>
+</body>
+</html>
