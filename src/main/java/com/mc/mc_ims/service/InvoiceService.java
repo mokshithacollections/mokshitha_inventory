@@ -52,6 +52,16 @@ public class InvoiceService {
 
         for (InvoiceItemDTO itemDTO : dto.getItems()) {
 
+            // A missing productId used to reach findById(null), which Spring Data
+            // reports as "The given id must not be null" — a message that says
+            // nothing about which line is at fault or which screen sent it.
+            // Name the item instead.
+            if (itemDTO.getProductId() == null || itemDTO.getProductId().isBlank()) {
+                throw new IllegalArgumentException(
+                        "Line item \"" + itemDTO.getDescription() + "\" has no product ID, "
+                        + "so its stock cannot be updated.");
+            }
+
             // Deduct the sold quantity from product stock (atomic with the invoice save).
             Product product = productRepository.findById(itemDTO.getProductId())
                     .orElseThrow(() -> new IllegalArgumentException(

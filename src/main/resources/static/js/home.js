@@ -1117,7 +1117,15 @@
 		}
 
 
+		// True from the moment Generate Bill is pressed until the server has
+		// answered. Without this the button stayed live while the request was in
+		// flight, so a second press sent the SAME basket again and the shop got two
+		// identical bills — and the stock was deducted twice.
+		let billSubmitInFlight = false;
+
 		function generateBill() {
+
+		    if (billSubmitInFlight) return;
 
 		    if (currentBill.length === 0) {
 		        showNotification('No items in bill', 'error');
@@ -1133,6 +1141,15 @@
 		    if (!buyerName) return showNotification('Please Enter Buyer Name..!', 'error');
 		    if (buyerMobile.length !== 10) return showNotification('Enter Valid Mobile..!', 'error');
 		    if (!paymentMode) return showNotification('Select Payment Mode..!', 'error');
+
+		    // Lock the button before the request leaves, not after it returns.
+		    const genBtn = document.getElementById('generateBillBtn');
+		    billSubmitInFlight = true;
+		    if (genBtn) {
+		        genBtn.dataset.originalLabel = genBtn.innerHTML;
+		        genBtn.disabled = true;
+		        genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+		    }
 
 		    // 🔥 Send only RAW data to backend
 		    fetch("/api/invoice/save", {
@@ -1169,17 +1186,28 @@
 		        // 🔥 Backend returns generated bill number
 		        const billNo = data.billNo;
 
-		        // Open invoice using bill number
-		        window.open("/invoice/" + billNo, "_blank");
-				
-				fetchInvoices();
-		        // Clear bill
+		        // Clear the basket FIRST. This used to run after window.open() and
+		        // fetchInvoices(), so anything that went wrong opening the invoice
+		        // tab (a popup blocker, a slow new window) left the items still on
+		        // screen — and pressing Generate Bill again billed them a second time.
 		        currentBill = [];
-				updateBillDisplay();
+		        updateBillDisplay();
+
+		        fetchInvoices();
+		        window.open("/invoice/" + billNo, "_blank");
 		    })
 		    .catch(error => {
 		        console.error("Error:", error);
 		        showNotification(error.message || "Failed to save invoice", "error");
+		    })
+		    .finally(() => {
+		        // Released on BOTH paths: after a failure the basket is untouched and
+		        // the cashier must be able to try again.
+		        billSubmitInFlight = false;
+		        if (genBtn) {
+		            genBtn.disabled = false;
+		            if (genBtn.dataset.originalLabel) genBtn.innerHTML = genBtn.dataset.originalLabel;
+		        }
 		    });
 		}
 		
@@ -1976,6 +2004,7 @@
 		 
 		    // Build exchange payload (if any)
 		    const exchangeItems = currentExchangeItems.map(it => ({
+		        productId:   it.productId,
 		        description: it.description,
 		        billOn:      it.billOn,
 		        color:       it.color,
