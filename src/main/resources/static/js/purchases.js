@@ -129,7 +129,7 @@ async function initPriceCheck() {
 }
 
 function scanPriceCheck(event) {
-    if (event.key !== 'Enter') return;
+    if (!isEnterKey(event)) return;
     event.preventDefault();
 
     const input = document.getElementById('pcScan');
@@ -644,7 +644,7 @@ function closePurchaseForm() {
 
 // Scanner / typed-ID handler: on Enter, look up the product and add a line.
 function scanAddPurchaseLine(event) {
-    if (event.key !== 'Enter') return;
+    if (!isEnterKey(event)) return;
     event.preventDefault();
 
     const input = document.getElementById('pfScan');
@@ -1026,7 +1026,7 @@ function closeCreditNoteForm() {
 
 // Scanner / typed-ID handler for credit note lines: Enter → look up + add line.
 function scanAddCreditLine(event) {
-    if (event.key !== 'Enter') return;
+    if (!isEnterKey(event)) return;
     event.preventDefault();
 
     const input = document.getElementById('cnScan');

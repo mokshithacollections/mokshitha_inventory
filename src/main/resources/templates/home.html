@@ -528,14 +528,30 @@
 	                                <option value="">Select Product</option>
 	                            </select>
 							</div>
-							<div class="info-item-value1">
-                                <span class="value" style="padding-top:10px"><i class="fas fa-barcode"></i> Scan Barcode </span>
-                                <input type="text" id="scanToBill" placeholder="Scan or type Product ID then press Enter" onkeydown="scanAddToBill(event)" autocomplete="off">
+							<div class="info-item-value1 bill-product-field">
+                                <span class="value" style="padding-top:10px"><i class="fas fa-barcode"></i> Product Id </span>
+                                <!-- autocapitalize/autocorrect/spellcheck off and inputmode=text stop
+                                     Android's predictive keyboard running this field through an IME,
+                                     which is what swallowed the Enter key on phones and tablets.
+                                     enterkeyhint=done labels the action key "Done" instead of "Next",
+                                     so it stops looking like it should move to the Quantity box. -->
+                                <input type="text" id="scanToBill"
+                                       placeholder="Scan or type Product ID"
+                                       onkeydown="scanAddToBill(event)"
+                                       onkeyup="scanAddToBillKeyup(event)"
+                                       autocomplete="off" autocapitalize="off" autocorrect="off"
+                                       spellcheck="false" inputmode="text" enterkeyhint="done">
                             </div>
-							<div class="info-item-value2">
-								<span class="value" style="padding-top:10px">Select Product Quantity </span>
-	                            <input type="number" id="productQuantity" placeholder="Qty" min="1" value="1">
+							<div class="info-item-value2 bill-qty-field">
+								<span class="value" style="padding-top:10px">Quantity </span>
+	                            <input type="number" id="productQuantity" placeholder="Qty" min="1" value="1"
+	                                   inputmode="numeric" enterkeyhint="done">
 							</div>
+							<!-- The Return/Exchange screen has always had this button; billing did
+							     not, so the keyboard's Enter was the ONLY way to add an item. -->
+							<button type="button" class="btn-secondary scan-add-btn" onclick="doScanAddToBill()">
+								<i class="fas fa-cart-plus"></i> Add
+							</button>
                         </div>
 
                         <!-- Current Bill Items -->

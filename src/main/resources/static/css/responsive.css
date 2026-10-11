@@ -155,6 +155,15 @@
     .right-panel,
     .below-panel     { padding: 20px; }
 
+    /* ---- Generate Bill row on tablet --------------------------------------
+       Desktop doubles the Product Id box to 480px. On a tablet that is too
+       much of the row, so it is 1.5x the original 240px instead. Applies
+       across the whole tablet band — this rule and the one restated in the
+       860px block below, which has to repeat it because that block otherwise
+       sets these to 100%. Phones go back to full width at 640px. */
+    #scanToBill      { width: 360px; }
+    #productQuantity { width: 120px; }
+
     /* 3-up product form becomes 2-up; the barcode / Add-Product row follows. */
     .product-form                { grid-template-columns: repeat(2, 1fr); }
     .barcode-preview-cell        { grid-column: 1 / -1; }
@@ -319,9 +328,25 @@
     }
     .info-item-value1        { flex: 1 1 100%; }
     .info-item-value2        { flex: 1 1 100%; }
+    /* Must restate these: the desktop rule is .selling-item .bill-*-field
+       (0,2,0), which would otherwise out-specify the two lines above. */
+    .selling-item .bill-product-field,
+    .selling-item .bill-qty-field { flex: 1 1 100%; }
+    /* Add button goes full width under the scan box on a touch screen —
+       margin-left:auto is for right-aligning it on a desktop row, so it is
+       cleared here where the button spans the full width anyway. */
+    .selling-item .scan-add-btn {
+        flex: 1 1 100%;
+        margin-left: 0;
+        justify-content: center;
+        min-height: 46px;
+    }
     .info-item-value1 select { width: 100%; }
     .info-item-value2 input  { width: 100%; }
-    #scanToBill              { width: 100%; }
+    /* Tablet portrait keeps the same 1.5x sizing as tablet landscape rather
+       than stretching to the full width of the stacked row. */
+    #scanToBill              { width: 360px; }
+    #productQuantity         { width: 120px; }
 
     /* ---- Tables: scroll sideways rather than crushing columns ---- */
     th, td { padding: 9px 8px; font-size: 13px; }
@@ -461,6 +486,11 @@
     .info-grid          { grid-template-columns: 1fr; }
     .supplier-form-grid { grid-template-columns: 1fr; }
     .refund-controls    { grid-template-columns: 1fr; }
+
+    /* Phone: a fixed 360px box is wider than the screen, so both fields go
+       back to filling their stacked row. */
+    #scanToBill         { width: 100%; }
+    #productQuantity    { width: 100%; }
     .summary-grid       { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px 14px; }
 
     th, td           { padding: 8px 6px; font-size: 12.5px; }

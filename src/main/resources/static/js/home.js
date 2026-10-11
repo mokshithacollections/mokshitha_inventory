@@ -825,7 +825,7 @@
                 document.getElementById('editActualPrice').value = product.actualPrice;
                 document.getElementById('editSellingPrice').value = product.sellingPrice;
                 document.getElementById('editQuantity').value = product.quantity;
-            } else if (event && event.key === 'Enter') {
+            } else if (event && isEnterKey(event)) {
                 showNotification('Product not found', 'error');
             }
         }
@@ -949,7 +949,7 @@
 		    const q = input.value.trim().toLowerCase();
 
 		    // Pressing Enter with an exact match triggers delete directly (scanner flow)
-		    if (event && event.key === 'Enter') {
+		    if (event && isEnterKey(event)) {
 		        const exact = products.find(p => p.productId.toLowerCase() === q);
 		        if (exact) { removeProduct(); return; }
 		    }
@@ -1426,9 +1426,31 @@
 		// Scanner / typed-ID handler for the Generate-Bill section.
 		// Triggered on Enter: looks up the product by exact ID, sets the
 		// existing Select Product dropdown, then invokes the existing addToBill().
+		// Set when keydown already handled this press, so the keyup fallback
+		// below does not add the same item a second time.
+		let scanHandledOnKeydown = false;
+
 		function scanAddToBill(event) {
-		    if (event.key !== 'Enter') return;
-		    event.preventDefault();
+		    if (!isEnterKey(event)) {
+		        // Not Enter (or an Android IME keydown reporting 229) — remember
+		        // that keydown did NOT handle it, so keyup can pick it up.
+		        scanHandledOnKeydown = false;
+		        return;
+		    }
+		    scanHandledOnKeydown = true;
+		    if (event.preventDefault) event.preventDefault();
+		    doScanAddToBill();
+		}
+
+		// Android fallback. When the IME swallows the keydown, the keyup still
+		// reports the real Enter, so the item is added — focus is restored by
+		// doScanAddToBill() afterwards.
+		function scanAddToBillKeyup(event) {
+		    if (isEnterKey(event) && !scanHandledOnKeydown) doScanAddToBill();
+		    scanHandledOnKeydown = false;
+		}
+
+		function doScanAddToBill() {
 
 		    const input = document.getElementById('scanToBill');
 		    const code = input.value.trim();
@@ -1827,7 +1849,7 @@
 		 
 		// ----------- Step 3: Exchange items -----------
 		function exchangeScanAdd(event) {
-		    if (event.key !== 'Enter') return;
+		    if (!isEnterKey(event)) return;
 		    if (event.preventDefault) event.preventDefault();
 		 
 		    const scanInput = document.getElementById('exchangeScan');

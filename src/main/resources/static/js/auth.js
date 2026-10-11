@@ -6,6 +6,29 @@
 //  3. Fills the account bar and drives the Change Password dialog
 // ============================================================
 
+// ============================================================
+//  SHARED: "did the user press Enter?"
+//
+//  Not as simple as `event.key === 'Enter'`.
+//
+//  Android soft keyboards with predictive text (Gboard by default) run the
+//  field through an IME. While composing, EVERY keydown is reported as
+//  key="Unidentified", keyCode=229 — including the action key. A handler that
+//  tests only for key==='Enter' never fires, never calls preventDefault(), and
+//  the browser falls back to its default behaviour: move focus to the next
+//  field. That is exactly the "it jumps to Quantity but nothing is added"
+//  symptom on a phone or tablet.
+//
+//  So: check keydown for a real Enter, and let callers fall back to keyup,
+//  which on Android does carry the true key after composition ends.
+// ============================================================
+function isEnterKey(event) {
+    if (!event) return false;
+    return event.key === 'Enter'
+        || event.keyCode === 13      // older WebViews that never set .key
+        || event.which === 13;
+}
+
 (function () {
     'use strict';
 
